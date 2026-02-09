@@ -3,6 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+// Global event emitter for wishlist changes
+const wishlistListeners = new Set<() => void>();
+function notifyWishlistChange() {
+  wishlistListeners.forEach(fn => fn());
+}
+
 export function useWishlist() {
   const { user, isAuthenticated } = useAuthContext();
   const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
@@ -29,6 +35,13 @@ export function useWishlist() {
     }
   }, [isAuthenticated, fetchWishlistIds]);
 
+  // Listen for changes from other hook instances
+  useEffect(() => {
+    const listener = () => fetchWishlistIds();
+    wishlistListeners.add(listener);
+    return () => { wishlistListeners.delete(listener); };
+  }, [fetchWishlistIds]);
+
   const isInWishlist = (productId: string) => wishlistIds.has(productId);
 
   const toggleWishlist = async (productId: string) => {
@@ -40,7 +53,6 @@ export function useWishlist() {
     setLoading(true);
 
     if (isInWishlist(productId)) {
-      // Remove from wishlist
       const { error } = await supabase
         .from('wishlist')
         .delete()
@@ -56,9 +68,9 @@ export function useWishlist() {
           return next;
         });
         toast.success('Fjernet fra ønskeliste');
+        notifyWishlistChange();
       }
     } else {
-      // Add to wishlist
       const { error } = await supabase
         .from('wishlist')
         .insert({ user_id: user.id, product_id: productId });
@@ -68,6 +80,7 @@ export function useWishlist() {
       } else {
         setWishlistIds(prev => new Set([...prev, productId]));
         toast.success('Tilføjet til ønskeliste');
+        notifyWishlistChange();
       }
     }
 
