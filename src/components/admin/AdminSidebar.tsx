@@ -14,13 +14,13 @@ export default function AdminSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0 overflow-y-auto">
+    <aside className="w-64 bg-card border-r border-border flex flex-col h-screen sticky top-0 overflow-y-auto">
       {/* Logo */}
-      <div className="p-6 border-b border-sidebar-border">
-        <h2 className="font-display text-xl font-semibold text-sidebar-foreground">
+      <div className="p-6 border-b border-border">
+        <h2 className="font-display text-xl font-semibold text-foreground">
           Thumbie
         </h2>
-        <p className="text-xs text-sidebar-foreground/50 mt-1">{t('sidebar.admin')}</p>
+        <p className="text-xs text-muted-foreground mt-1">{t('sidebar.admin')}</p>
       </div>
 
       {/* Navigation */}
@@ -31,10 +31,10 @@ export default function AdminSidebar() {
             to={link.to}
             end={link.end}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-colors ${
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
+                  ? 'bg-primary/10 text-primary font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`
             }
           >
@@ -45,10 +45,10 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-border">
         <NavLink
           to="/"
-          className="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
         >
           <ArrowLeft size={18} />
           {t('sidebar.backToShop')}

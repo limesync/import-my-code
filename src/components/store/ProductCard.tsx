@@ -25,7 +25,6 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
     if (product.variants.length > 0) {
       addItem(product.id, product.variants[0].id);
       toast.success(`${product.title} tilføjet til kurv`);
@@ -45,7 +44,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image container */}
       <div className="relative aspect-square overflow-hidden bg-secondary/30 rounded-t-2xl">
         <img
           src={getProductImage(product.slug)}
@@ -53,28 +51,26 @@ export default function ProductCard({ product }: ProductCardProps) {
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
-        {/* Sale badge */}
         {hasDiscount && (
           <span className="absolute top-3 left-3 badge-sale">
             -{discountPercent}%
           </span>
         )}
 
-        {/* Wishlist button */}
+        {/* Wishlist button - pink/blush */}
         <button
           onClick={handleWishlist}
           disabled={wishlistLoading}
           className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
             isWishlisted
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-white/90 text-muted-foreground hover:bg-white hover:text-primary'
+              ? 'bg-blush text-blush-foreground'
+              : 'bg-white/90 text-blush hover:bg-blush/20'
           } ${wishlistLoading ? 'opacity-50' : ''}`}
           aria-label="Tilføj til ønskeliste"
         >
           <Heart size={16} fill={isWishlisted ? 'currentColor' : 'none'} />
         </button>
 
-        {/* Quick add button */}
         <div
           className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-300 ${
             isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
@@ -90,7 +86,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
-      {/* Product info */}
       <div className="p-4">
         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
           {product.category}
