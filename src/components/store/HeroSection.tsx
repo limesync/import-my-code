@@ -43,7 +43,7 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative h-full store-container flex flex-col justify-end pb-16 md:pb-24">
         <div className="max-w-xl animate-slide-up">
-          <span className="inline-block text-primary-foreground/90 text-xs font-medium uppercase tracking-[0.25em] mb-4 bg-primary/80 backdrop-blur-sm px-4 py-2 rounded-full">
+          <span className="inline-block text-white text-xs font-medium uppercase tracking-[0.25em] mb-4 bg-accent/80 backdrop-blur-sm px-4 py-2 rounded-full">
             {slide?.title || 'Ny kollektion 2025'}
           </span>
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-white font-medium leading-tight mb-5">
