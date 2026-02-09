@@ -14,83 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
-      cart_items: {
-        Row: {
-          created_at: string
-          id: string
-          product_id: string
-          quantity: number
-          user_id: string
-          variant_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          product_id: string
-          quantity?: number
-          user_id: string
-          variant_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          product_id?: string
-          quantity?: number
-          user_id?: string
-          variant_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cart_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cart_items_variant_id_fkey"
-            columns: ["variant_id"]
-            isOneToOne: false
-            referencedRelation: "product_variants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       hero_slides: {
         Row: {
           button_link: string | null
           button_text: string | null
-          created_at: string
           id: string
           image_url: string | null
           sort_order: number
           subtitle: string | null
           title: string
-          updated_at: string
           visible: boolean
         }
         Insert: {
           button_link?: string | null
           button_text?: string | null
-          created_at?: string
           id?: string
           image_url?: string | null
           sort_order?: number
           subtitle?: string | null
           title: string
-          updated_at?: string
           visible?: boolean
         }
         Update: {
           button_link?: string | null
           button_text?: string | null
-          created_at?: string
           id?: string
           image_url?: string | null
           sort_order?: number
           subtitle?: string | null
           title?: string
-          updated_at?: string
           visible?: boolean
         }
         Relationships: []
@@ -98,8 +50,7 @@ export type Database = {
       order_events: {
         Row: {
           created_at: string
-          created_by: string | null
-          description: string
+          description: string | null
           event_type: string
           id: string
           metadata: Json | null
@@ -107,8 +58,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by?: string | null
-          description: string
+          description?: string | null
           event_type: string
           id?: string
           metadata?: Json | null
@@ -116,8 +66,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string | null
-          description?: string
+          description?: string | null
           event_type?: string
           id?: string
           metadata?: Json | null
@@ -149,10 +98,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           order_id: string
-          price: number
+          price?: number
           product_id?: string | null
           product_title: string
-          quantity: number
+          quantity?: number
           variant_id?: string | null
           variant_name: string
         }
@@ -198,13 +147,13 @@ export type Database = {
           notes: string | null
           order_number: string
           shipping: number
-          shipping_address: Json
+          shipping_address: Json | null
           status: string
-          status_updated_at: string | null
           subtotal: number
           total: number
           tracking_number: string | null
           tracking_url: string | null
+          updated_at: string
           user_id: string | null
         }
         Insert: {
@@ -213,13 +162,13 @@ export type Database = {
           notes?: string | null
           order_number: string
           shipping?: number
-          shipping_address: Json
+          shipping_address?: Json | null
           status?: string
-          status_updated_at?: string | null
-          subtotal: number
-          total: number
+          subtotal?: number
+          total?: number
           tracking_number?: string | null
           tracking_url?: string | null
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
@@ -228,13 +177,13 @@ export type Database = {
           notes?: string | null
           order_number?: string
           shipping?: number
-          shipping_address?: Json
+          shipping_address?: Json | null
           status?: string
-          status_updated_at?: string | null
           subtotal?: number
           total?: number
           tracking_number?: string | null
           tracking_url?: string | null
+          updated_at?: string
           user_id?: string | null
         }
         Relationships: []
@@ -288,7 +237,7 @@ export type Database = {
           inventory?: number
           name: string
           options?: Json | null
-          price: number
+          price?: number
           product_id: string
           sku: string
         }
@@ -356,6 +305,7 @@ export type Database = {
           created_at: string
           first_name: string | null
           id: string
+          is_admin: boolean
           last_name: string | null
           phone: string | null
           updated_at: string
@@ -368,6 +318,7 @@ export type Database = {
           created_at?: string
           first_name?: string | null
           id: string
+          is_admin?: boolean
           last_name?: string | null
           phone?: string | null
           updated_at?: string
@@ -380,31 +331,11 @@ export type Database = {
           created_at?: string
           first_name?: string | null
           id?: string
+          is_admin?: boolean
           last_name?: string | null
           phone?: string | null
           updated_at?: string
           zip?: string | null
-        }
-        Relationships: []
-      }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
         }
         Relationships: []
       }
@@ -442,17 +373,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -579,8 +503,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "moderator", "user"],
-    },
+    Enums: {},
   },
 } as const
