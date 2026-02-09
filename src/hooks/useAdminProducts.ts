@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
+import { getProductImage } from '@/hooks/useProducts';
 
 export interface AdminProduct {
   id: string;
@@ -73,11 +74,18 @@ export function useAdminProducts() {
         imagesByProduct[img.product_id].push(img as AdminImage);
       });
 
-      return productsData.map(p => ({
-        ...p,
-        variants: variantsByProduct[p.id] || [],
-        images: imagesByProduct[p.id] || [],
-      })) as AdminProduct[];
+      return productsData.map(p => {
+        const dbImages = imagesByProduct[p.id] || [];
+        // If DB images have broken local URLs, use static mapping
+        const images = dbImages.length > 0 && !dbImages[0].url.startsWith('/local')
+          ? dbImages
+          : [{ id: 'static', product_id: p.id, url: getProductImage(p.slug), alt: p.title, sort_order: 0 }];
+        return {
+          ...p,
+          variants: variantsByProduct[p.id] || [],
+          images,
+        };
+      }) as AdminProduct[];
     },
   });
 

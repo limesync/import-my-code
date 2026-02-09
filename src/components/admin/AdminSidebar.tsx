@@ -14,7 +14,7 @@ export default function AdminSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col min-h-screen">
+    <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0 overflow-y-auto">
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
         <h2 className="font-display text-xl font-semibold text-sidebar-foreground">
