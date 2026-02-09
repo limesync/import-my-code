@@ -129,7 +129,7 @@ export default function CookiesPage() {
             </h2>
             <p>
               Har du spørgsmål til vores brug af cookies, er du velkommen til at 
-              kontakte os på <a href="mailto:hej@finovida.dk" className="text-primary hover:underline">hej@finovida.dk</a>.
+              kontakte os på <a href="mailto:hej@thumbie.dk" className="text-primary hover:underline">hej@thumbie.dk</a>.
             </p>
             <p>
               Se også vores <Link to="/privatlivspolitik" className="text-primary hover:underline">privatlivspolitik</Link> for 

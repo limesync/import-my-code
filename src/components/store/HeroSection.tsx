@@ -36,7 +36,7 @@ export default function HeroSection() {
         />
         <div 
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(180deg, hsla(355, 20%, 10%, 0) 0%, hsla(355, 15%, 10%, 0.2) 50%, hsla(355, 15%, 10%, 0.65) 100%)' }}
+          style={{ background: 'linear-gradient(180deg, hsla(0, 0%, 10%, 0) 0%, hsla(0, 0%, 10%, 0.2) 50%, hsla(0, 0%, 10%, 0.65) 100%)' }}
         />
       </div>
 
@@ -47,11 +47,11 @@ export default function HeroSection() {
             {slide?.title || 'Ny kollektion 2025'}
           </span>
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-white font-medium leading-tight mb-5">
-            Skab varme og 
-            <span className="italic"> magi</span> i dit hjem
+            Skab varme og
+            <span className="italic"> stil</span> i dit hjem
           </h1>
           <p className="text-white/85 text-base md:text-lg mb-8 leading-relaxed max-w-md">
-            {slide?.subtitle || 'Delikate pudebetræk inspireret af eventyr og skandinavisk elegance. Bløde materialer, smukt håndværk.'}
+            {slide?.subtitle || 'Udvalgte pudebetræk i naturlige materialer og tidløse designs. Skandinavisk kvalitet til dit hjem.'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link

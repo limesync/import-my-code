@@ -8,16 +8,16 @@ export default function StorySection() {
         {/* Decorative element */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="h-px w-12 bg-primary/30" />
-          <span className="text-primary text-lg">✿</span>
+          <span className="text-primary text-lg">◆</span>
           <div className="h-px w-12 bg-primary/30" />
         </div>
         <span className="section-label">Vores historie</span>
         <h2 className="font-display text-3xl md:text-4xl text-foreground mb-6 leading-relaxed">
-          Inspireret af eventyrets magi
+          Skandinavisk design til dit hjem
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-8 max-w-lg mx-auto">
-          Thumbie er født af kærlighed til de bløde, delikate detaljer der gør et hjem til et eventyr.
-          Hvert pudebetræk er nøje udvalgt for at bringe varme, komfort og en touch af magi til dit rum.
+          Thumbie er skabt af passion for bløde, delikate detaljer der gør et hjem til noget særligt.
+          Vi specialiserer os i pudebetræk til pyntepuder — men vores kollektion vokser løbende med nye produktkategorier.
         </p>
         <Link
           to="/produkter"

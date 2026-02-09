@@ -37,7 +37,7 @@ export default function StoreFooter() {
               </h3>
             </Link>
             <p className="text-sm text-muted-foreground mb-6 max-w-xs leading-relaxed">
-              Delikate pudebetræk inspireret af eventyr og skandinavisk elegance. 
+              Stilfulde pudebetræk til pyntepuder i skandinavisk design. 
               Blødt, smukt og med kærlighed til detaljen.
             </p>
             <div className="flex gap-3">

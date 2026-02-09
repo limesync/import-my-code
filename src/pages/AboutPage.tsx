@@ -7,11 +7,11 @@ export default function AboutPage() {
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="font-display text-4xl md:text-5xl font-semibold mb-6">
-            Om FINOVIDA
+            Om Thumbie
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Vi skaber smukke pudebetræk, der forvandler dit hjem til et 
-            behageligt og stilfuldt rum. Vores passion er kvalitet og design.
+            Vi skaber stilfulde pudebetræk til pyntepuder, der forvandler dit hjem til et 
+            behageligt og elegant rum. Vores passion er kvalitet og skandinavisk design.
           </p>
         </div>
 
@@ -20,8 +20,8 @@ export default function AboutPage() {
           <h2 className="font-display text-2xl font-semibold mb-6">Vores Historie</h2>
           <div className="prose prose-lg max-w-none text-muted-foreground">
             <p>
-              FINOVIDA blev grundlagt med en simpel vision: at bringe skandinavisk 
-              design og kvalitet ind i hvert hjem gennem smukke, håndudvalgte pudebetræk.
+              Thumbie blev grundlagt med en simpel vision: at bringe skandinavisk 
+              design og kvalitet ind i hvert hjem gennem smukke, håndudvalgte pudebetræk til pyntepuder.
             </p>
             <p>
               Vi tror på, at de små detaljer gør en stor forskel. Et veldesignet 
@@ -30,10 +30,10 @@ export default function AboutPage() {
               kollektion.
             </p>
             <p>
-              Vores rejse startede med en kærlighed til tekstiler og en frustration 
-              over manglen på kvalitetspudebetræk til rimelige priser. I dag er vi 
-              stolte af at kunne tilbyde en kurateret kollektion, der kombinerer 
-              æstetik, kvalitet og bæredygtighed.
+              Vores rejse startede med en kærlighed til tekstiler og en ambition 
+              om at skabe kvalitetspudebetræk til rimelige priser. I dag er vi 
+              stolte af at tilbyde en kurateret kollektion, der kombinerer 
+              æstetik, kvalitet og bæredygtighed — og vi udvider løbende med nye produktkategorier.
             </p>
           </div>
         </div>
