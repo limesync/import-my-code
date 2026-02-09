@@ -54,6 +54,24 @@ export default function AdminOrderDetail() {
         .select('*')
         .eq('order_id', orderId);
 
+      // Fetch product slugs for image mapping
+      const productIds = (itemsData || []).map(i => i.product_id).filter(Boolean) as string[];
+      let productSlugMap: Record<string, string> = {};
+      if (productIds.length > 0) {
+        const { data: productsData } = await supabase
+          .from('products')
+          .select('id, slug')
+          .in('id', productIds);
+        if (productsData) {
+          productSlugMap = Object.fromEntries(productsData.map(p => [p.id, p.slug]));
+        }
+      }
+
+      const itemsWithImages = (itemsData || []).map(item => ({
+        ...item,
+        resolved_image: item.product_id ? getProductImage(productSlugMap[item.product_id] || '') : null,
+      }));
+
       const { data: eventsData } = await supabase
         .from('order_events')
         .select('*')
@@ -69,7 +87,7 @@ export default function AdminOrderDetail() {
         shipping_address: typeof orderData.shipping_address === 'string'
           ? JSON.parse(orderData.shipping_address)
           : orderData.shipping_address,
-        items: itemsData || [],
+        items: itemsWithImages,
         events: (eventsData || []) as OrderEvent[],
       };
     },
@@ -292,11 +310,11 @@ export default function AdminOrderDetail() {
           <div className="admin-card">
             <h3 className="font-medium mb-4">Produkter</h3>
             <div className="divide-y">
-              {order.items.map((item: { id: string; image_url: string | null; product_title: string; variant_name: string; quantity: number; price: number }) => (
+              {order.items.map((item: { id: string; image_url: string | null; resolved_image: string | null; product_title: string; variant_name: string; quantity: number; price: number }) => (
                 <div key={item.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
                   <div className="w-16 h-16 bg-secondary rounded-lg overflow-hidden flex-shrink-0">
-                    {item.image_url ? (
-                      <img src={item.image_url} alt={item.product_title} className="w-full h-full object-cover" />
+                    {(item.resolved_image || item.image_url) ? (
+                      <img src={item.resolved_image || item.image_url!} alt={item.product_title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Package size={24} className="text-muted-foreground" /></div>
                     )}
