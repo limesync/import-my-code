@@ -1,14 +1,18 @@
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Package, ShoppingCart, Image, ArrowLeft, Settings } from 'lucide-react';
-
-const adminLinks = [
-  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
-  { to: '/admin/produkter', icon: Package, label: 'Produkter', end: false },
-  { to: '/admin/ordrer', icon: ShoppingCart, label: 'Ordrer', end: false },
-  { to: '/admin/forside', icon: Image, label: 'Forside', end: false },
-];
+import { useAdminLocale } from '@/contexts/AdminLocaleContext';
 
 export default function AdminSidebar() {
+  const { t } = useAdminLocale();
+
+  const adminLinks = [
+    { to: '/admin', icon: LayoutDashboard, label: t('sidebar.dashboard'), end: true },
+    { to: '/admin/produkter', icon: Package, label: t('sidebar.products'), end: false },
+    { to: '/admin/ordrer', icon: ShoppingCart, label: t('sidebar.orders'), end: false },
+    { to: '/admin/forside', icon: Image, label: t('sidebar.frontpage'), end: false },
+    { to: '/admin/indstillinger', icon: Settings, label: t('sidebar.settings'), end: false },
+  ];
+
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col min-h-screen">
       {/* Logo */}
@@ -16,7 +20,7 @@ export default function AdminSidebar() {
         <h2 className="font-display text-xl font-semibold text-sidebar-foreground">
           Thumbie
         </h2>
-        <p className="text-xs text-sidebar-foreground/50 mt-1">Administration</p>
+        <p className="text-xs text-sidebar-foreground/50 mt-1">{t('sidebar.admin')}</p>
       </div>
 
       {/* Navigation */}
@@ -47,7 +51,7 @@ export default function AdminSidebar() {
           className="flex items-center gap-3 px-3 py-2.5 rounded text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
         >
           <ArrowLeft size={18} />
-          Til webshop
+          {t('sidebar.backToShop')}
         </NavLink>
       </div>
     </aside>
