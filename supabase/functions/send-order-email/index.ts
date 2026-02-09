@@ -14,206 +14,123 @@ interface EmailRequest {
   trackingUrl?: string;
 }
 
+const BRAND = {
+  name: 'Thumbie',
+  email: 'hej@thumbie.dk',
+  color: '#B08968',
+  bgColor: '#F9F6F2',
+  darkColor: '#3A3A3A',
+};
+
 const EMAIL_TEMPLATES = {
   order_confirmation: {
-    subject: "Ordrebekræftelse - FINOVIDA",
+    subject: `Ordrebekræftelse - ${BRAND.name}`,
     getHtml: (order: OrderData) => `
       <!DOCTYPE html>
       <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ordrebekræftelse</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #F7F4EF;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-          <tr>
-            <td style="padding: 40px 30px; text-align: center; background-color: #3A3A3A;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600; letter-spacing: 2px;">✦ FINOVIDA ✦</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 40px 30px;">
-              <h2 style="margin: 0 0 20px; color: #3A3A3A; font-size: 24px;">Tak for din ordre!</h2>
-              <p style="margin: 0 0 20px; color: #666; line-height: 1.6;">
-                Hej ${order.customerName},<br><br>
-                Vi har modtaget din ordre og er i gang med at forberede den. Du vil modtage en email når din ordre er afsendt.
-              </p>
-              
-              <div style="background-color: #F7F4EF; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <p style="margin: 0 0 10px; font-size: 14px; color: #666;">Ordrenummer</p>
-                <p style="margin: 0; font-size: 20px; font-weight: 600; color: #3A3A3A;">${order.orderNumber}</p>
+      <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+      <body style="margin:0;padding:0;font-family:'Helvetica Neue',Arial,sans-serif;background-color:${BRAND.bgColor};">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background-color:#ffffff;">
+          <tr><td style="padding:40px 30px;text-align:center;background-color:${BRAND.darkColor};">
+            <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:600;letter-spacing:2px;">◆ ${BRAND.name} ◆</h1>
+          </td></tr>
+          <tr><td style="padding:40px 30px;">
+            <h2 style="margin:0 0 20px;color:${BRAND.darkColor};font-size:24px;">Tak for din ordre!</h2>
+            <p style="margin:0 0 20px;color:#666;line-height:1.6;">
+              Hej ${order.customerName},<br><br>
+              Vi har modtaget din ordre og er i gang med at forberede den. Du vil modtage en email når din ordre er afsendt.
+            </p>
+            <div style="background-color:${BRAND.bgColor};padding:20px;border-radius:12px;margin:30px 0;">
+              <p style="margin:0 0 10px;font-size:14px;color:#666;">Ordrenummer</p>
+              <p style="margin:0;font-size:20px;font-weight:600;color:${BRAND.darkColor};">${order.orderNumber}</p>
+            </div>
+            <h3 style="margin:30px 0 15px;color:${BRAND.darkColor};font-size:16px;border-bottom:1px solid #E5D8C8;padding-bottom:10px;">Dine produkter</h3>
+            ${order.items.map(item => `
+              <div style="padding:15px 0;border-bottom:1px solid #f0f0f0;">
+                <p style="margin:0;font-weight:500;color:${BRAND.darkColor};">${item.product_title}</p>
+                <p style="margin:5px 0 0;font-size:14px;color:#666;">${item.variant_name} × ${item.quantity} — ${(item.price * item.quantity).toLocaleString('da-DK')} kr</p>
               </div>
-
-              <h3 style="margin: 30px 0 15px; color: #3A3A3A; font-size: 16px; border-bottom: 1px solid #E5D8C8; padding-bottom: 10px;">Dine produkter</h3>
-              ${order.items.map(item => `
-                <div style="display: flex; padding: 15px 0; border-bottom: 1px solid #f0f0f0;">
-                  <div style="flex: 1;">
-                    <p style="margin: 0; font-weight: 500; color: #3A3A3A;">${item.product_title}</p>
-                    <p style="margin: 5px 0 0; font-size: 14px; color: #666;">${item.variant_name} × ${item.quantity}</p>
-                  </div>
-                  <p style="margin: 0; font-weight: 500; color: #3A3A3A;">${(item.price * item.quantity).toLocaleString('da-DK')} kr</p>
-                </div>
-              `).join('')}
-              
-              <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #E5D8C8;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                  <span style="color: #666;">Subtotal</span>
-                  <span style="color: #3A3A3A;">${order.subtotal.toLocaleString('da-DK')} kr</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                  <span style="color: #666;">Fragt</span>
-                  <span style="color: #3A3A3A;">${order.shipping.toLocaleString('da-DK')} kr</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 600;">
-                  <span style="color: #3A3A3A;">Total</span>
-                  <span style="color: #3A3A3A;">${order.total.toLocaleString('da-DK')} kr</span>
-                </div>
-              </div>
-
-              <h3 style="margin: 30px 0 15px; color: #3A3A3A; font-size: 16px;">Leveringsadresse</h3>
-              <p style="margin: 0; color: #666; line-height: 1.6;">
-                ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}<br>
-                ${order.shippingAddress.address}<br>
-                ${order.shippingAddress.zip} ${order.shippingAddress.city}<br>
-                ${order.shippingAddress.country}
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 30px; background-color: #F7F4EF; text-align: center;">
-              <p style="margin: 0; color: #666; font-size: 14px;">
-                Har du spørgsmål? Kontakt os på <a href="mailto:info@finovida.dk" style="color: #C7A98A;">info@finovida.dk</a>
-              </p>
-              <p style="margin: 15px 0 0; color: #999; font-size: 12px;">
-                © ${new Date().getFullYear()} FINOVIDA. Alle rettigheder forbeholdes.
-              </p>
-            </td>
-          </tr>
+            `).join('')}
+            <div style="margin-top:20px;padding-top:20px;border-top:2px solid #E5D8C8;">
+              <table width="100%"><tr><td style="color:#666;">Subtotal</td><td style="text-align:right;color:${BRAND.darkColor};">${order.subtotal.toLocaleString('da-DK')} kr</td></tr>
+              <tr><td style="color:#666;padding-top:8px;">Fragt</td><td style="text-align:right;color:${BRAND.darkColor};padding-top:8px;">${order.shipping === 0 ? 'Gratis' : order.shipping.toLocaleString('da-DK') + ' kr'}</td></tr>
+              <tr><td style="font-size:18px;font-weight:600;color:${BRAND.darkColor};padding-top:12px;border-top:1px solid #eee;">Total</td><td style="text-align:right;font-size:18px;font-weight:600;color:${BRAND.darkColor};padding-top:12px;border-top:1px solid #eee;">${order.total.toLocaleString('da-DK')} kr</td></tr></table>
+            </div>
+            <h3 style="margin:30px 0 15px;color:${BRAND.darkColor};font-size:16px;">Leveringsadresse</h3>
+            <p style="margin:0;color:#666;line-height:1.6;">${order.shippingAddress.firstName} ${order.shippingAddress.lastName}<br>${order.shippingAddress.address}<br>${order.shippingAddress.zip} ${order.shippingAddress.city}<br>${order.shippingAddress.country}</p>
+          </td></tr>
+          <tr><td style="padding:30px;background-color:${BRAND.bgColor};text-align:center;">
+            <p style="margin:0;color:#666;font-size:14px;">Har du spørgsmål? Kontakt os på <a href="mailto:${BRAND.email}" style="color:${BRAND.color};">${BRAND.email}</a></p>
+            <p style="margin:15px 0 0;color:#999;font-size:12px;">© ${new Date().getFullYear()} ${BRAND.name}. Alle rettigheder forbeholdes.</p>
+          </td></tr>
         </table>
-      </body>
-      </html>
+      </body></html>
     `,
   },
   order_shipped: {
-    subject: "Din ordre er afsendt! - FINOVIDA",
+    subject: `Din ordre er afsendt! - ${BRAND.name}`,
     getHtml: (order: OrderData, trackingNumber?: string, trackingUrl?: string) => `
       <!DOCTYPE html>
       <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Din ordre er afsendt</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #F7F4EF;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-          <tr>
-            <td style="padding: 40px 30px; text-align: center; background-color: #3A3A3A;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600; letter-spacing: 2px;">✦ FINOVIDA ✦</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 40px 30px;">
-              <div style="text-align: center; margin-bottom: 30px;">
-                <div style="font-size: 48px; margin-bottom: 10px;">📦</div>
-                <h2 style="margin: 0; color: #3A3A3A; font-size: 24px;">Din ordre er på vej!</h2>
+      <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+      <body style="margin:0;padding:0;font-family:'Helvetica Neue',Arial,sans-serif;background-color:${BRAND.bgColor};">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background-color:#ffffff;">
+          <tr><td style="padding:40px 30px;text-align:center;background-color:${BRAND.darkColor};">
+            <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:600;letter-spacing:2px;">◆ ${BRAND.name} ◆</h1>
+          </td></tr>
+          <tr><td style="padding:40px 30px;">
+            <div style="text-align:center;margin-bottom:30px;">
+              <div style="font-size:48px;margin-bottom:10px;">📦</div>
+              <h2 style="margin:0;color:${BRAND.darkColor};font-size:24px;">Din ordre er på vej!</h2>
+            </div>
+            <p style="margin:0 0 20px;color:#666;line-height:1.6;">Hej ${order.customerName},<br><br>Din ordre ${order.orderNumber} er nu afsendt og på vej til dig.</p>
+            ${trackingNumber ? `
+              <div style="background-color:${BRAND.bgColor};padding:25px;border-radius:12px;margin:30px 0;text-align:center;">
+                <p style="margin:0 0 10px;font-size:14px;color:#666;">Tracking-nummer</p>
+                <p style="margin:0;font-size:18px;font-weight:600;color:${BRAND.darkColor};font-family:monospace;">${trackingNumber}</p>
+                ${trackingUrl ? `<a href="${trackingUrl}" style="display:inline-block;margin-top:15px;padding:12px 24px;background-color:${BRAND.color};color:#ffffff;text-decoration:none;border-radius:25px;font-weight:500;">Spor din forsendelse →</a>` : ''}
               </div>
-              
-              <p style="margin: 0 0 20px; color: #666; line-height: 1.6;">
-                Hej ${order.customerName},<br><br>
-                Gode nyheder! Din ordre ${order.orderNumber} er nu afsendt og på vej til dig.
-              </p>
-              
-              ${trackingNumber ? `
-                <div style="background-color: #F7F4EF; padding: 25px; border-radius: 8px; margin: 30px 0; text-align: center;">
-                  <p style="margin: 0 0 10px; font-size: 14px; color: #666;">Tracking-nummer</p>
-                  <p style="margin: 0; font-size: 18px; font-weight: 600; color: #3A3A3A; font-family: monospace;">${trackingNumber}</p>
-                  ${trackingUrl ? `
-                    <a href="${trackingUrl}" style="display: inline-block; margin-top: 15px; padding: 12px 24px; background-color: #C7A98A; color: #ffffff; text-decoration: none; border-radius: 25px; font-weight: 500;">
-                      Spor din forsendelse →
-                    </a>
-                  ` : ''}
-                </div>
-              ` : ''}
-
-              <h3 style="margin: 30px 0 15px; color: #3A3A3A; font-size: 16px;">Leveringsadresse</h3>
-              <p style="margin: 0; color: #666; line-height: 1.6;">
-                ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}<br>
-                ${order.shippingAddress.address}<br>
-                ${order.shippingAddress.zip} ${order.shippingAddress.city}<br>
-                ${order.shippingAddress.country}
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 30px; background-color: #F7F4EF; text-align: center;">
-              <p style="margin: 0; color: #666; font-size: 14px;">
-                Har du spørgsmål? Kontakt os på <a href="mailto:info@finovida.dk" style="color: #C7A98A;">info@finovida.dk</a>
-              </p>
-              <p style="margin: 15px 0 0; color: #999; font-size: 12px;">
-                © ${new Date().getFullYear()} FINOVIDA. Alle rettigheder forbeholdes.
-              </p>
-            </td>
-          </tr>
+            ` : ''}
+            <h3 style="margin:30px 0 15px;color:${BRAND.darkColor};font-size:16px;">Leveringsadresse</h3>
+            <p style="margin:0;color:#666;line-height:1.6;">${order.shippingAddress.firstName} ${order.shippingAddress.lastName}<br>${order.shippingAddress.address}<br>${order.shippingAddress.zip} ${order.shippingAddress.city}<br>${order.shippingAddress.country}</p>
+          </td></tr>
+          <tr><td style="padding:30px;background-color:${BRAND.bgColor};text-align:center;">
+            <p style="margin:0;color:#666;font-size:14px;">Har du spørgsmål? Kontakt os på <a href="mailto:${BRAND.email}" style="color:${BRAND.color};">${BRAND.email}</a></p>
+            <p style="margin:15px 0 0;color:#999;font-size:12px;">© ${new Date().getFullYear()} ${BRAND.name}. Alle rettigheder forbeholdes.</p>
+          </td></tr>
         </table>
-      </body>
-      </html>
+      </body></html>
     `,
   },
   order_delivered: {
-    subject: "Din ordre er leveret! - FINOVIDA",
+    subject: `Din ordre er leveret! - ${BRAND.name}`,
     getHtml: (order: OrderData) => `
       <!DOCTYPE html>
       <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Din ordre er leveret</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #F7F4EF;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-          <tr>
-            <td style="padding: 40px 30px; text-align: center; background-color: #3A3A3A;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600; letter-spacing: 2px;">✦ FINOVIDA ✦</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 40px 30px;">
-              <div style="text-align: center; margin-bottom: 30px;">
-                <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
-                <h2 style="margin: 0; color: #3A3A3A; font-size: 24px;">Din ordre er leveret!</h2>
-              </div>
-              
-              <p style="margin: 0 0 20px; color: #666; line-height: 1.6;">
-                Hej ${order.customerName},<br><br>
-                Din ordre ${order.orderNumber} er nu leveret. Vi håber du bliver glad for dine nye produkter!
-              </p>
-              
-              <div style="background-color: #F7F4EF; padding: 25px; border-radius: 8px; margin: 30px 0; text-align: center;">
-                <p style="margin: 0 0 15px; color: #3A3A3A; font-weight: 500;">Hvad synes du om dine nye produkter?</p>
-                <p style="margin: 0; color: #666; font-size: 14px;">
-                  Vi vil elske at høre fra dig! Del gerne din oplevelse med os.
-                </p>
-              </div>
-
-              <p style="margin: 20px 0 0; color: #666; line-height: 1.6;">
-                Tak fordi du handler hos FINOVIDA. Vi sætter stor pris på din støtte!
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 30px; background-color: #F7F4EF; text-align: center;">
-              <p style="margin: 0; color: #666; font-size: 14px;">
-                Har du spørgsmål? Kontakt os på <a href="mailto:info@finovida.dk" style="color: #C7A98A;">info@finovida.dk</a>
-              </p>
-              <p style="margin: 15px 0 0; color: #999; font-size: 12px;">
-                © ${new Date().getFullYear()} FINOVIDA. Alle rettigheder forbeholdes.
-              </p>
-            </td>
-          </tr>
+      <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+      <body style="margin:0;padding:0;font-family:'Helvetica Neue',Arial,sans-serif;background-color:${BRAND.bgColor};">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background-color:#ffffff;">
+          <tr><td style="padding:40px 30px;text-align:center;background-color:${BRAND.darkColor};">
+            <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:600;letter-spacing:2px;">◆ ${BRAND.name} ◆</h1>
+          </td></tr>
+          <tr><td style="padding:40px 30px;">
+            <div style="text-align:center;margin-bottom:30px;">
+              <div style="font-size:48px;margin-bottom:10px;">🎉</div>
+              <h2 style="margin:0;color:${BRAND.darkColor};font-size:24px;">Din ordre er leveret!</h2>
+            </div>
+            <p style="margin:0 0 20px;color:#666;line-height:1.6;">Hej ${order.customerName},<br><br>Din ordre ${order.orderNumber} er nu leveret. Vi håber du bliver glad for dine nye produkter!</p>
+            <div style="background-color:${BRAND.bgColor};padding:25px;border-radius:12px;margin:30px 0;text-align:center;">
+              <p style="margin:0 0 15px;color:${BRAND.darkColor};font-weight:500;">Hvad synes du om dine nye produkter?</p>
+              <p style="margin:0;color:#666;font-size:14px;">Vi vil elske at høre fra dig! Del gerne din oplevelse med os.</p>
+            </div>
+            <p style="margin:20px 0 0;color:#666;line-height:1.6;">Tak fordi du handler hos ${BRAND.name}. Vi sætter stor pris på din støtte!</p>
+          </td></tr>
+          <tr><td style="padding:30px;background-color:${BRAND.bgColor};text-align:center;">
+            <p style="margin:0;color:#666;font-size:14px;">Har du spørgsmål? Kontakt os på <a href="mailto:${BRAND.email}" style="color:${BRAND.color};">${BRAND.email}</a></p>
+            <p style="margin:15px 0 0;color:#999;font-size:12px;">© ${new Date().getFullYear()} ${BRAND.name}. Alle rettigheder forbeholdes.</p>
+          </td></tr>
         </table>
-      </body>
-      </html>
+      </body></html>
     `,
   },
 };
@@ -247,7 +164,6 @@ interface OrderData {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -258,10 +174,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (!resendApiKey) {
       console.log("RESEND_API_KEY not configured - email not sent");
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          message: "Email service not configured. Please add RESEND_API_KEY to send emails." 
-        }),
+        JSON.stringify({ success: false, message: "Email service not configured. Please add RESEND_API_KEY to send emails." }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -272,31 +185,20 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Missing required fields: orderId and emailType");
     }
 
-    // Create Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch order data
     const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("id", orderId)
-      .single();
+      .from("orders").select("*").eq("id", orderId).single();
 
-    if (orderError || !order) {
-      throw new Error("Order not found");
-    }
+    if (orderError || !order) throw new Error("Order not found");
 
-    // Fetch order items
     const { data: items } = await supabase
-      .from("order_items")
-      .select("*")
-      .eq("order_id", orderId);
+      .from("order_items").select("*").eq("order_id", orderId);
 
     const shippingAddress = typeof order.shipping_address === 'string' 
-      ? JSON.parse(order.shipping_address) 
-      : order.shipping_address;
+      ? JSON.parse(order.shipping_address) : order.shipping_address;
 
     const orderData: OrderData = {
       orderNumber: order.order_number,
@@ -309,28 +211,20 @@ const handler = async (req: Request): Promise<Response> => {
       shippingAddress,
     };
 
-    if (!orderData.customerEmail) {
-      throw new Error("No customer email found for this order");
-    }
+    if (!orderData.customerEmail) throw new Error("No customer email found for this order");
 
     const template = EMAIL_TEMPLATES[emailType];
-    if (!template) {
-      throw new Error(`Unknown email type: ${emailType}`);
-    }
+    if (!template) throw new Error(`Unknown email type: ${emailType}`);
 
     const html = emailType === 'order_shipped' 
       ? template.getHtml(orderData, trackingNumber, trackingUrl)
       : template.getHtml(orderData);
 
-    // Send email via Resend
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Authorization": `Bearer ${resendApiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: "FINOVIDA <noreply@finovida.dk>", // Update with your verified domain
+        from: `${BRAND.name} <noreply@thumbie.dk>`,
         to: [orderData.customerEmail],
         subject: template.subject,
         html,
@@ -338,7 +232,6 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const emailResult = await emailResponse.json();
-
     if (!emailResponse.ok) {
       console.error("Resend API error:", emailResult);
       throw new Error(emailResult.message || "Failed to send email");
@@ -346,7 +239,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Email sent successfully: ${emailType} for order ${order.order_number}`);
 
-    // Log email event
     await supabase.from("order_events").insert({
       order_id: orderId,
       event_type: "email_sent",

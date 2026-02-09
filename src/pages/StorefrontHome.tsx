@@ -8,8 +8,8 @@ export default function StorefrontHome() {
   return (
     <>
       <HeroSection />
-      <FeaturedProducts />
       <USPBanner />
+      <FeaturedProducts />
       <StorySection />
       <NewsletterSection />
     </>
