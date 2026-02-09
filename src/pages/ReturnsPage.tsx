@@ -48,7 +48,7 @@ export default function ReturnsPage() {
             </h2>
             <div className="prose max-w-none text-muted-foreground">
               <p>
-                Hos FINOVIDA har du 30 dages fuld returret fra du modtager din ordre. 
+                Hos Thumbie har du 30 dages fuld returret fra du modtager din ordre. 
                 Det betyder, at du har god tid til at vurdere, om produktet lever op 
                 til dine forventninger.
               </p>
@@ -69,7 +69,7 @@ export default function ReturnsPage() {
                 <div>
                   <h3 className="font-medium mb-1">Kontakt os</h3>
                   <p className="text-muted-foreground">
-                    Send en email til <a href="mailto:hej@finovida.dk" className="text-primary hover:underline">hej@finovida.dk</a> med 
+                    Send en email til <a href="mailto:hej@thumbie.dk" className="text-primary hover:underline">hej@thumbie.dk</a> med 
                     dit ordrenummer og oplys, hvilke varer du ønsker at returnere.
                   </p>
                 </div>

@@ -19,9 +19,9 @@ export default function NewsletterSection() {
     <section className="bg-primary/10 border-y border-primary/15">
       <div className="store-container py-16 md:py-20">
         <div className="max-w-xl mx-auto text-center">
-          <span className="text-primary text-2xl mb-4 block">✿</span>
+          <span className="text-primary text-2xl mb-4 block">◆</span>
           <h2 className="font-display text-2xl md:text-3xl font-medium text-foreground mb-3">
-            Bliv en del af eventyret
+            Hold dig opdateret
           </h2>
           <p className="text-muted-foreground text-sm mb-8">
             Tilmeld dig vores nyhedsbrev og få 10% rabat på din første ordre, 
