@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default function ReturnsPage() {
   return (
     <div className="store-container py-16 md:py-24">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="font-display text-4xl md:text-5xl font-semibold mb-6">

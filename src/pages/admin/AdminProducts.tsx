@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useAdminProducts } from '@/hooks/useAdminProducts';
 import { useAdminLocale } from '@/contexts/AdminLocaleContext';
+import { getProductImage } from '@/hooks/useProducts';
 
 export default function AdminProducts() {
   const { products, isLoading, deleteProduct, updateProduct } = useAdminProducts();
@@ -79,13 +80,7 @@ export default function AdminProducts() {
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-secondary rounded-lg overflow-hidden flex-shrink-0">
-                          {product.images[0]?.url ? (
-                            <img src={product.images[0].url} alt={product.title} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                              {t('common.noImg')}
-                            </div>
-                          )}
+                          <img src={product.images[0]?.url || getProductImage(product.slug)} alt={product.title} className="w-full h-full object-cover" />
                         </div>
                         <div>
                           <p className="font-medium">{product.title}</p>

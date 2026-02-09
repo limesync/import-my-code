@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import type { Json } from '@/integrations/supabase/types';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useAdminLocale } from '@/contexts/AdminLocaleContext';
+import { getProductImage } from '@/hooks/useProducts';
 
 interface LocalVariant {
   id: string;
@@ -180,7 +181,14 @@ export default function AdminProductForm() {
         <div className="admin-card space-y-4">
           <h2 className="font-display text-lg font-medium mb-2">{t('productForm.image')}</h2>
           <div className="grid grid-cols-2 gap-4">
-            <ImageUpload value={imageUrl} onChange={setImageUrl} />
+            <div className="space-y-3">
+              {(imageUrl || (!isNew && existing?.slug)) && (
+                <div className="w-full aspect-square bg-secondary rounded-lg overflow-hidden">
+                  <img src={imageUrl || getProductImage(existing?.slug || '')} alt={title} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <ImageUpload value={imageUrl} onChange={setImageUrl} />
+            </div>
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1.5">{t('productForm.imageUrlLabel')}</label>
