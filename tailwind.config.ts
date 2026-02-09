@@ -59,6 +59,10 @@ export default {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
+        blush: {
+          DEFAULT: "hsl(var(--blush))",
+          foreground: "hsl(var(--blush-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

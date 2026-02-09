@@ -100,16 +100,17 @@ export default function AdminDashboard() {
 function OrderStatusBadge({ status }: { status: string }) {
   const { t } = useAdminLocale();
   const styles: Record<string, string> = {
-    pending: 'bg-accent/20 text-accent-foreground',
-    confirmed: 'bg-primary/20 text-primary',
-    shipped: 'bg-primary/10 text-primary',
-    delivered: 'bg-primary/20 text-primary',
-    cancelled: 'bg-destructive/20 text-destructive',
+    pending: 'bg-accent/15 text-accent',
+    confirmed: 'bg-primary/15 text-primary',
+    shipped: 'bg-accent/10 text-accent',
+    delivered: 'bg-success/15 text-success',
+    cancelled: 'bg-destructive/15 text-destructive',
+    refunded: 'bg-muted text-muted-foreground',
   };
   const key = `status.${status}` as any;
 
   return (
-    <span className={`inline-block text-xs font-medium px-2 py-1 rounded ${styles[status] || ''}`}>
+    <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${styles[status] || 'bg-secondary text-foreground'}`}>
       {t(key) || status}
     </span>
   );

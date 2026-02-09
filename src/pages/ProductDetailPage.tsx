@@ -3,7 +3,7 @@ import { useProduct, useProducts, getProductImage, formatPrice } from '@/hooks/u
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useState } from 'react';
-import { ChevronLeft, Minus, Plus, Check, Truck, RotateCcw, Heart, Share2 } from 'lucide-react';
+import { ChevronLeft, Minus, Plus, Check, Truck, RotateCcw, Heart, Share2, ShieldCheck } from 'lucide-react';
 import ProductCard from '@/components/store/ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
@@ -19,7 +19,6 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
-  // Set default variant when product loads
   const selectedVariant = product?.variants.find(v => v.id === (selectedVariantId || product.variants[0]?.id)) 
     || product?.variants[0];
 
@@ -46,12 +45,8 @@ export default function ProductDetailPage() {
       <div className="store-container py-24 text-center">
         <div className="max-w-md mx-auto">
           <h1 className="font-display text-3xl mb-4">Produkt ikke fundet</h1>
-          <p className="text-muted-foreground mb-8">
-            Det produkt du leder efter findes desværre ikke.
-          </p>
-          <Link to="/produkter" className="btn-primary">
-            Se alle produkter
-          </Link>
+          <p className="text-muted-foreground mb-8">Det produkt du leder efter findes desværre ikke.</p>
+          <Link to="/produkter" className="btn-primary">Se alle produkter</Link>
         </div>
       </div>
     );
@@ -66,20 +61,14 @@ export default function ProductDetailPage() {
   };
 
   const handleWishlist = () => {
-    if (product) {
-      toggleWishlist(product.id);
-    }
+    if (product) toggleWishlist(product.id);
   };
 
   const isWishlisted = product ? isInWishlist(product.id) : false;
 
   const handleShare = async () => {
     try {
-      await navigator.share({
-        title: product.title,
-        text: product.description || '',
-        url: window.location.href,
-      });
+      await navigator.share({ title: product.title, text: product.description || '', url: window.location.href });
     } catch {
       navigator.clipboard.writeText(window.location.href);
       toast.success('Link kopieret til udklipsholder');
@@ -92,24 +81,23 @@ export default function ProductDetailPage() {
 
   const hasDiscount = selectedVariant?.compare_at_price && selectedVariant.compare_at_price > selectedVariant.price;
   const discountPercent = hasDiscount 
-    ? Math.round((1 - selectedVariant!.price / selectedVariant!.compare_at_price!) * 100)
-    : 0;
+    ? Math.round((1 - selectedVariant!.price / selectedVariant!.compare_at_price!) * 100) : 0;
 
   return (
     <div className="store-container py-8 md:py-14">
       {/* Breadcrumb */}
       <nav className="mb-8">
-        <Link 
-          to="/produkter" 
-          className="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ChevronLeft size={16} className="transition-transform group-hover:-translate-x-1" />
-          Tilbage til produkter
-        </Link>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link to="/" className="hover:text-foreground transition-colors">Hjem</Link>
+          <span>/</span>
+          <Link to="/produkter" className="hover:text-foreground transition-colors">Produkter</Link>
+          <span>/</span>
+          <span className="text-foreground">{product.title}</span>
+        </div>
       </nav>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-        {/* Image */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+        {/* Image section */}
         <div className="relative">
           <div className="aspect-[4/5] bg-secondary rounded-2xl overflow-hidden">
             <img
@@ -119,19 +107,39 @@ export default function ProductDetailPage() {
             />
           </div>
           
-          {/* Sale badge */}
           {hasDiscount && (
-            <span className="absolute top-4 left-4 badge-sale">
+            <span className="absolute top-4 left-4 badge-sale text-sm">
               -{discountPercent}%
             </span>
           )}
+
+          {/* Floating wishlist on image */}
+          <button
+            onClick={handleWishlist}
+            disabled={wishlistLoading}
+            className={`absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+              isWishlisted
+                ? 'bg-blush text-blush-foreground'
+                : 'bg-white/90 text-blush hover:bg-blush/20'
+            } ${wishlistLoading ? 'opacity-50' : ''}`}
+            aria-label="Tilføj til ønskeliste"
+          >
+            <Heart size={22} fill={isWishlisted ? 'currentColor' : 'none'} />
+          </button>
         </div>
 
         {/* Details */}
-        <div className="flex flex-col py-4">
-          <span className="section-label">{product.category}</span>
+        <div className="flex flex-col py-2 lg:py-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs font-medium uppercase tracking-[0.2em] text-accent">{product.category}</span>
+            {hasDiscount && (
+              <span className="text-xs font-semibold bg-sale/10 text-sale px-2 py-0.5 rounded-full">
+                Spar {discountPercent}%
+              </span>
+            )}
+          </div>
           
-          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-4 leading-tight">
+          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground mb-5 leading-tight">
             {product.title}
           </h1>
 
@@ -146,7 +154,7 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          <p className="text-muted-foreground leading-relaxed mb-8">
+          <p className="text-muted-foreground leading-relaxed mb-8 text-base">
             {product.description}
           </p>
 
@@ -163,12 +171,13 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedVariantId(v.id)}
                     className={`px-5 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
                       v.id === (selectedVariantId || product.variants[0]?.id)
-                        ? 'bg-foreground text-background'
+                        ? 'bg-foreground text-background shadow-md'
                         : 'bg-secondary text-foreground hover:bg-secondary/80'
                     } ${v.inventory <= 0 ? 'opacity-40 cursor-not-allowed line-through' : ''}`}
                     disabled={v.inventory <= 0}
                   >
                     {v.name}
+                    {v.inventory <= 0 && <span className="ml-1 text-[10px]">(Udsolgt)</span>}
                   </button>
                 ))}
               </div>
@@ -222,19 +231,6 @@ export default function ProductDetailPage() {
             </button>
 
             <button
-              onClick={handleWishlist}
-              disabled={wishlistLoading}
-              className={`w-14 h-14 rounded-full border flex items-center justify-center transition-all duration-300 ${
-                isWishlisted
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'border-border text-muted-foreground hover:border-foreground hover:text-foreground'
-              } ${wishlistLoading ? 'opacity-50' : ''}`}
-              aria-label="Tilføj til ønskeliste"
-            >
-              <Heart size={20} fill={isWishlisted ? 'currentColor' : 'none'} />
-            </button>
-
-            <button
               onClick={handleShare}
               className="w-14 h-14 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-foreground hover:text-foreground transition-all duration-300"
               aria-label="Del produkt"
@@ -243,33 +239,30 @@ export default function ProductDetailPage() {
             </button>
           </div>
 
-          {/* Low stock warning */}
+          {/* Low stock */}
           {selectedVariant && selectedVariant.inventory > 0 && selectedVariant.inventory <= 5 && (
             <p className="text-sm text-primary font-medium mb-6">
               ⚡ Kun {selectedVariant.inventory} tilbage på lager
             </p>
           )}
 
-          {/* Guarantees */}
-          <div className="pt-6 border-t border-border space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                <Truck size={18} className="text-muted-foreground" />
+          {/* Guarantees - improved design */}
+          <div className="pt-6 border-t border-border space-y-3">
+            {[
+              { icon: Truck, title: 'Gratis fragt', desc: 'Ved køb over 500 kr' },
+              { icon: RotateCcw, title: '30 dages returret', desc: 'Nem og gratis returnering' },
+              { icon: ShieldCheck, title: 'Sikker betaling', desc: 'SSL-krypteret checkout' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Icon size={18} className="text-accent" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{title}</p>
+                  <p className="text-xs text-muted-foreground">{desc}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">Gratis fragt</p>
-                <p className="text-xs text-muted-foreground">Ved køb over 500 kr</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                <RotateCcw size={18} className="text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">30 dages returret</p>
-                <p className="text-xs text-muted-foreground">Nem og gratis returnering</p>
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Tags */}
@@ -277,10 +270,7 @@ export default function ProductDetailPage() {
             <div className="mt-6 pt-6 border-t border-border">
               <div className="flex flex-wrap gap-2">
                 {product.tags.map(tag => (
-                  <span 
-                    key={tag} 
-                    className="text-xs bg-secondary px-3 py-1.5 rounded-full text-muted-foreground"
-                  >
+                  <span key={tag} className="text-xs bg-secondary px-3 py-1.5 rounded-full text-muted-foreground">
                     {tag}
                   </span>
                 ))}
@@ -299,11 +289,7 @@ export default function ProductDetailPage() {
           </div>
           <div className="product-grid">
             {related.map((p, i) => (
-              <div 
-                key={p.id} 
-                className="animate-fade-in" 
-                style={{ animationDelay: `${i * 100}ms`, opacity: 0 }}
-              >
+              <div key={p.id} className="animate-fade-in" style={{ animationDelay: `${i * 100}ms`, opacity: 0 }}>
                 <ProductCard product={p} />
               </div>
             ))}

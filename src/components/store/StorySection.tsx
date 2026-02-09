@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import storyImage from '@/assets/story-lifestyle.jpg';
 
 export default function StorySection() {
   return (
@@ -29,20 +30,18 @@ export default function StorySection() {
           </Link>
         </div>
 
-        {/* Right - Color swatches */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="space-y-4">
-            <div className="aspect-square rounded-2xl bg-primary/20 border border-primary/15" />
-            <div className="aspect-[3/4] rounded-2xl bg-accent/15 border border-accent/10" />
+        {/* Right - Image with decorative accent elements */}
+        <div className="relative">
+          <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg">
+            <img
+              src={storyImage}
+              alt="Skandinavisk interiør med Thumbie pudebetræk"
+              className="w-full h-full object-cover"
+            />
           </div>
-          <div className="space-y-4 pt-8">
-            <div className="aspect-[3/4] rounded-2xl bg-[hsl(var(--blush))]/20 border border-[hsl(var(--blush))]/15" />
-            <div className="aspect-square rounded-2xl bg-secondary border border-border" />
-          </div>
-          <div className="space-y-4 pt-4">
-            <div className="aspect-square rounded-2xl bg-primary/10 border border-primary/10" />
-            <div className="aspect-[3/4] rounded-2xl bg-accent/10 border border-accent/10" />
-          </div>
+          {/* Decorative accent corners */}
+          <div className="absolute -top-3 -right-3 w-20 h-20 border-t-2 border-r-2 border-accent/30 rounded-tr-2xl" />
+          <div className="absolute -bottom-3 -left-3 w-20 h-20 border-b-2 border-l-2 border-blush/40 rounded-bl-2xl" />
         </div>
       </div>
     </section>

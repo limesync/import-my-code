@@ -48,10 +48,7 @@ export default function WishlistPage() {
         id,
         product_id,
         product:products(
-          id,
-          title,
-          slug,
-          category,
+          id, title, slug, category,
           variants:product_variants(id, name, price, compare_at_price, inventory)
         )
       `)
@@ -62,7 +59,6 @@ export default function WishlistPage() {
     } else {
       const wishlistItems = (data as unknown as WishlistItem[]) || [];
       setItems(wishlistItems);
-      // Default variant selection to first variant
       const defaults: Record<string, string> = {};
       wishlistItems.forEach(item => {
         if (item.product.variants.length > 0) {
@@ -75,11 +71,7 @@ export default function WishlistPage() {
   };
 
   const removeFromWishlist = async (wishlistId: string) => {
-    const { error } = await supabase
-      .from('wishlist')
-      .delete()
-      .eq('id', wishlistId);
-
+    const { error } = await supabase.from('wishlist').delete().eq('id', wishlistId);
     if (error) {
       toast.error('Kunne ikke fjerne fra ønskeliste');
     } else {
@@ -103,7 +95,9 @@ export default function WishlistPage() {
     return (
       <div className="store-container py-16 md:py-24">
         <div className="max-w-md mx-auto text-center">
-          <Heart className="mx-auto mb-6 text-muted-foreground" size={48} />
+          <div className="w-16 h-16 bg-blush/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Heart className="text-blush" size={28} />
+          </div>
           <h1 className="font-display text-2xl font-semibold mb-4">Din ønskeliste</h1>
           <p className="text-muted-foreground mb-6">
             Log ind for at se din ønskeliste og gemme dine favoritprodukter.
@@ -127,16 +121,26 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="store-container py-16 md:py-24">
+    <div className="store-container py-12 md:py-20">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-display text-3xl font-semibold mb-2">Din ønskeliste</h1>
-        <p className="text-muted-foreground mb-8">
-          {items.length} {items.length === 1 ? 'produkt' : 'produkter'} gemt
-        </p>
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 bg-blush/20 rounded-full flex items-center justify-center">
+            <Heart className="text-blush" size={20} />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl md:text-3xl font-semibold">Din ønskeliste</h1>
+            <p className="text-sm text-muted-foreground">
+              {items.length} {items.length === 1 ? 'produkt' : 'produkter'} gemt
+            </p>
+          </div>
+        </div>
 
         {items.length === 0 ? (
-          <div className="text-center py-16 bg-muted/30 rounded-2xl">
-            <Heart className="mx-auto mb-4 text-muted-foreground" size={40} />
+          <div className="text-center py-16 bg-card rounded-2xl border border-border">
+            <div className="w-16 h-16 bg-blush/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Heart className="text-blush/50" size={28} />
+            </div>
             <p className="text-muted-foreground mb-6">Din ønskeliste er tom</p>
             <Link to="/produkter">
               <Button variant="outline">Udforsk produkter</Button>
@@ -152,12 +156,12 @@ export default function WishlistPage() {
               return (
                 <div
                   key={item.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 md:p-5 bg-card rounded-xl border"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 md:p-5 bg-card rounded-xl border border-border hover:shadow-md transition-shadow"
                 >
                   {/* Image */}
                   <Link
                     to={`/produkt/${item.product.slug}`}
-                    className="w-full sm:w-24 h-48 sm:h-24 bg-secondary rounded-lg overflow-hidden flex-shrink-0"
+                    className="w-full sm:w-24 h-32 sm:h-24 bg-secondary rounded-lg overflow-hidden flex-shrink-0"
                   >
                     <img
                       src={getProductImage(item.product.slug)}
@@ -210,7 +214,7 @@ export default function WishlistPage() {
                         </span>
                       )}
                       {selectedVariant && selectedVariant.inventory > 0 && selectedVariant.inventory <= 5 && (
-                        <span className="text-xs text-accent font-medium">Kun {selectedVariant.inventory} tilbage</span>
+                        <span className="text-xs text-primary font-medium">Kun {selectedVariant.inventory} tilbage</span>
                       )}
                     </div>
                   </div>
