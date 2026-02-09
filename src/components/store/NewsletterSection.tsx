@@ -16,10 +16,10 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="bg-primary/10 border-y border-primary/15">
+    <section className="bg-accent/8 border-y border-accent/12">
       <div className="store-container py-16 md:py-20">
         <div className="max-w-xl mx-auto text-center">
-          <span className="text-primary text-2xl mb-4 block">◆</span>
+          <span className="text-accent text-2xl mb-4 block">◆</span>
           <h2 className="font-display text-2xl md:text-3xl font-medium text-foreground mb-3">
             Hold dig opdateret
           </h2>
@@ -29,7 +29,7 @@ export default function NewsletterSection() {
           </p>
 
           {isSubscribed ? (
-            <div className="flex items-center justify-center gap-2 text-primary">
+            <div className="flex items-center justify-center gap-2 text-accent">
               <CheckCircle size={20} />
               <span className="font-medium">Du er nu tilmeldt!</span>
             </div>
@@ -40,7 +40,7 @@ export default function NewsletterSection() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Din email adresse"
-                className="flex-1 px-5 py-3.5 bg-background border border-border rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                className="flex-1 px-5 py-3.5 bg-background border border-border rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                 required
               />
               <button

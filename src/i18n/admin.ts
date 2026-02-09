@@ -156,6 +156,7 @@ export const adminTranslations = {
     'status.shipped': 'Afsendt',
     'status.delivered': 'Leveret',
     'status.cancelled': 'Annulleret',
+    'status.refunded': 'Refunderet',
 
     // Common
     'common.loading': 'Indlæser...',
@@ -316,6 +317,7 @@ export const adminTranslations = {
     'status.shipped': 'Shipped',
     'status.delivered': 'Delivered',
     'status.cancelled': 'Cancelled',
+    'status.refunded': 'Refunded',
 
     // Common
     'common.loading': 'Loading...',

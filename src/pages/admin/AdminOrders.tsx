@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminOrders } from '@/hooks/useAdminOrders';
 import { useAdminLocale } from '@/contexts/AdminLocaleContext';
-import { Search, Clock, Check, Truck, Package, X, ChevronRight } from 'lucide-react';
+import { Search, Clock, Check, Truck, Package, X, ChevronRight, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { TranslationKey } from '@/i18n/admin';
 
@@ -18,6 +18,7 @@ export default function AdminOrders() {
     shipped: { labelKey: 'status.shipped', color: 'bg-purple-100 text-purple-800', icon: Truck },
     delivered: { labelKey: 'status.delivered', color: 'bg-green-100 text-green-800', icon: Package },
     cancelled: { labelKey: 'status.cancelled', color: 'bg-red-100 text-red-800', icon: X },
+    refunded: { labelKey: 'status.refunded' as TranslationKey, color: 'bg-orange-100 text-orange-800', icon: RotateCcw },
   };
 
   const STATUS_OPTIONS = [
@@ -26,6 +27,7 @@ export default function AdminOrders() {
     { value: 'confirmed', labelKey: 'status.confirmed' as TranslationKey },
     { value: 'shipped', labelKey: 'status.shipped' as TranslationKey },
     { value: 'delivered', labelKey: 'status.delivered' as TranslationKey },
+    { value: 'refunded', labelKey: 'status.refunded' as TranslationKey },
     { value: 'cancelled', labelKey: 'status.cancelled' as TranslationKey },
   ];
 

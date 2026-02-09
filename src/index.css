@@ -36,6 +36,10 @@
     --accent: 180 36% 46%;
     --accent-foreground: 0 0% 100%;
 
+    /* Soft Blush Pink */
+    --blush: 350 40% 80%;
+    --blush-foreground: 350 30% 30%;
+
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
