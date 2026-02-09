@@ -20,6 +20,7 @@ interface WishlistItem {
       id: string;
       name: string;
       price: number;
+      compare_at_price: number | null;
       inventory: number;
     }>;
   };
@@ -30,6 +31,7 @@ export default function WishlistPage() {
   const { addItem } = useCart();
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -50,7 +52,7 @@ export default function WishlistPage() {
           title,
           slug,
           category,
-          variants:product_variants(id, name, price, inventory)
+          variants:product_variants(id, name, price, compare_at_price, inventory)
         )
       `)
       .eq('user_id', user!.id);
@@ -58,7 +60,16 @@ export default function WishlistPage() {
     if (error) {
       console.error('Error fetching wishlist:', error);
     } else {
-      setItems((data as unknown as WishlistItem[]) || []);
+      const wishlistItems = (data as unknown as WishlistItem[]) || [];
+      setItems(wishlistItems);
+      // Default variant selection to first variant
+      const defaults: Record<string, string> = {};
+      wishlistItems.forEach(item => {
+        if (item.product.variants.length > 0) {
+          defaults[item.id] = item.product.variants[0].id;
+        }
+      });
+      setSelectedVariants(defaults);
     }
     setLoading(false);
   };
@@ -78,10 +89,13 @@ export default function WishlistPage() {
   };
 
   const handleAddToCart = (item: WishlistItem) => {
-    const variant = item.product.variants[0];
-    if (variant) {
+    const variantId = selectedVariants[item.id];
+    const variant = item.product.variants.find(v => v.id === variantId);
+    if (variant && variant.inventory > 0) {
       addItem(item.product.id, variant.id, 1);
       toast.success('Tilføjet til kurv');
+    } else {
+      toast.error('Denne variant er udsolgt');
     }
   };
 
@@ -130,56 +144,101 @@ export default function WishlistPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 p-4 bg-card rounded-xl border"
-              >
-                <Link
-                  to={`/produkt/${item.product.slug}`}
-                  className="w-20 h-20 bg-secondary rounded-lg overflow-hidden flex-shrink-0"
-                >
-                  <img
-                    src={getProductImage(item.product.slug)}
-                    alt={item.product.title}
-                    className="w-full h-full object-cover"
-                  />
-                </Link>
+            {items.map((item) => {
+              const selectedId = selectedVariants[item.id];
+              const selectedVariant = item.product.variants.find(v => v.id === selectedId) || item.product.variants[0];
+              const hasDiscount = selectedVariant?.compare_at_price && selectedVariant.compare_at_price > selectedVariant.price;
 
-                <div className="flex-1 min-w-0">
+              return (
+                <div
+                  key={item.id}
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 md:p-5 bg-card rounded-xl border"
+                >
+                  {/* Image */}
                   <Link
                     to={`/produkt/${item.product.slug}`}
-                    className="font-medium text-foreground hover:text-primary transition-colors"
+                    className="w-full sm:w-24 h-48 sm:h-24 bg-secondary rounded-lg overflow-hidden flex-shrink-0"
                   >
-                    {item.product.title}
+                    <img
+                      src={getProductImage(item.product.slug)}
+                      alt={item.product.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    />
                   </Link>
-                  <p className="text-sm text-muted-foreground">{item.product.category}</p>
-                  <p className="text-sm font-medium mt-1">
-                    {item.product.variants[0] && formatPrice(item.product.variants[0].price)}
-                  </p>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddToCart(item)}
-                    className="gap-2"
-                  >
-                    <ShoppingBag size={16} />
-                    <span className="hidden sm:inline">Tilføj til kurv</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeFromWishlist(item.id)}
-                    className="text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 size={18} />
-                  </Button>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0 w-full">
+                    <Link
+                      to={`/produkt/${item.product.slug}`}
+                      className="font-display text-lg font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                      {item.product.title}
+                    </Link>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{item.product.category}</p>
+
+                    {/* Variant selection */}
+                    {item.product.variants.length > 1 && (
+                      <div className="mt-3">
+                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Størrelse</label>
+                        <div className="flex flex-wrap gap-1.5">
+                          {item.product.variants.map(v => (
+                            <button
+                              key={v.id}
+                              onClick={() => setSelectedVariants(prev => ({ ...prev, [item.id]: v.id }))}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                v.id === selectedId
+                                  ? 'bg-foreground text-background'
+                                  : 'bg-secondary text-foreground hover:bg-secondary/80'
+                              } ${v.inventory <= 0 ? 'opacity-40 cursor-not-allowed line-through' : ''}`}
+                              disabled={v.inventory <= 0}
+                            >
+                              {v.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Price */}
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-base font-semibold text-foreground">
+                        {selectedVariant && formatPrice(selectedVariant.price)}
+                      </span>
+                      {hasDiscount && (
+                        <span className="text-sm text-muted-foreground line-through">
+                          {formatPrice(selectedVariant!.compare_at_price!)}
+                        </span>
+                      )}
+                      {selectedVariant && selectedVariant.inventory > 0 && selectedVariant.inventory <= 5 && (
+                        <span className="text-xs text-accent font-medium">Kun {selectedVariant.inventory} tilbage</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex sm:flex-col items-center gap-2 w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAddToCart(item)}
+                      disabled={!selectedVariant || selectedVariant.inventory <= 0}
+                      className="gap-2 flex-1 sm:flex-none"
+                    >
+                      <ShoppingBag size={16} />
+                      <span className="sm:hidden lg:inline">Tilføj til kurv</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeFromWishlist(item.id)}
+                      className="text-muted-foreground hover:text-destructive flex-shrink-0"
+                    >
+                      <Trash2 size={18} />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
