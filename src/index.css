@@ -6,55 +6,55 @@
 
 @layer base {
   :root {
-    /* Thumbie – Modern Scandinavian Palette */
+    /* Thumbie – Warm Scandinavian Palette with Teal Accent */
     
     /* Warm Ivory Base */
-    --background: 40 30% 97%;
+    --background: 30 33% 97%;
     /* Near-Black Charcoal */
     --foreground: 0 0% 10%;
 
     /* Pure white cards */
-    --card: 40 20% 99%;
+    --card: 30 25% 99%;
     --card-foreground: 0 0% 10%;
 
-    --popover: 40 20% 99%;
+    --popover: 30 25% 99%;
     --popover-foreground: 0 0% 10%;
 
-    /* Teal - Primary (#3D8B8B) */
-    --primary: 180 39% 39%;
+    /* Warm Terracotta/Sand - Primary (#B08968) */
+    --primary: 28 30% 55%;
     --primary-foreground: 0 0% 100%;
 
-    /* Soft Warm Gray - Secondary */
-    --secondary: 35 15% 92%;
+    /* Soft Swan Gray - Secondary */
+    --secondary: 28 18% 92%;
     --secondary-foreground: 0 0% 10%;
 
     /* Muted neutrals */
-    --muted: 35 10% 94%;
+    --muted: 28 12% 94%;
     --muted-foreground: 0 0% 42%;
 
-    /* Warm Sand - Accent */
-    --accent: 32 30% 72%;
-    --accent-foreground: 0 0% 10%;
+    /* Teal Blue - Accent (#4A9E9E) */
+    --accent: 180 36% 46%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 35 10% 88%;
-    --input: 35 10% 88%;
-    --ring: 180 39% 39%;
+    --border: 28 12% 88%;
+    --input: 28 12% 88%;
+    --ring: 28 30% 55%;
 
     /* Cozy rounded corners */
     --radius: 1rem;
 
     /* Sidebar (admin) - Deep charcoal tones */
     --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 40 20% 92%;
-    --sidebar-primary: 180 39% 45%;
+    --sidebar-foreground: 30 20% 92%;
+    --sidebar-primary: 180 36% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 16%;
-    --sidebar-accent-foreground: 40 20% 92%;
+    --sidebar-accent-foreground: 30 20% 92%;
     --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 180 39% 45%;
+    --sidebar-ring: 180 36% 46%;
 
     /* Custom tokens */
     --font-display: 'Playfair Display', Georgia, serif;
@@ -62,11 +62,11 @@
     
     /* Warm overlays and shadows */
     --hero-overlay: linear-gradient(180deg, hsla(0, 0%, 10%, 0) 0%, hsla(0, 0%, 10%, 0.15) 50%, hsla(0, 0%, 10%, 0.7) 100%);
-    --shadow-soft: 0 4px 24px -6px hsla(180, 15%, 30%, 0.08);
-    --shadow-card: 0 2px 8px hsla(180, 10%, 30%, 0.04), 0 8px 24px hsla(180, 10%, 30%, 0.06);
-    --shadow-elevated: 0 16px 48px -12px hsla(180, 15%, 30%, 0.16);
-    --shadow-product: 0 2px 12px -4px hsla(180, 10%, 30%, 0.06);
-    --shadow-product-hover: 0 20px 48px -16px hsla(180, 20%, 30%, 0.18);
+    --shadow-soft: 0 4px 24px -6px hsla(28, 15%, 30%, 0.08);
+    --shadow-card: 0 2px 8px hsla(28, 10%, 30%, 0.04), 0 8px 24px hsla(28, 10%, 30%, 0.06);
+    --shadow-elevated: 0 16px 48px -12px hsla(28, 15%, 30%, 0.16);
+    --shadow-product: 0 2px 12px -4px hsla(28, 10%, 30%, 0.06);
+    --shadow-product-hover: 0 20px 48px -16px hsla(28, 20%, 30%, 0.18);
 
     /* Sale badge */
     --sale: 0 72% 50%;
@@ -78,26 +78,26 @@
   }
 
   .dark {
-    /* Dark mode - Charcoal base with teal accents */
+    /* Dark mode - Charcoal base with warm + teal accents */
     --background: 0 0% 8%;
-    --foreground: 40 20% 92%;
+    --foreground: 30 20% 92%;
     --card: 0 0% 11%;
-    --card-foreground: 40 20% 92%;
+    --card-foreground: 30 20% 92%;
     --popover: 0 0% 11%;
-    --popover-foreground: 40 20% 92%;
-    --primary: 180 40% 45%;
+    --popover-foreground: 30 20% 92%;
+    --primary: 28 30% 50%;
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 15%;
-    --secondary-foreground: 40 20% 92%;
+    --secondary-foreground: 30 20% 92%;
     --muted: 0 0% 18%;
-    --muted-foreground: 40 10% 55%;
-    --accent: 32 30% 55%;
+    --muted-foreground: 30 10% 55%;
+    --accent: 180 36% 40%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 180 40% 45%;
+    --ring: 28 30% 50%;
   }
 }
 
@@ -136,13 +136,13 @@
   /* Primary button - warm and inviting */
   .btn-primary {
     @apply bg-primary text-primary-foreground px-7 py-3.5 rounded-full text-sm font-medium transition-all duration-300;
-    box-shadow: 0 4px 16px -4px hsl(180 39% 39% / 0.35);
+    box-shadow: 0 4px 16px -4px hsl(28 30% 55% / 0.35);
   }
 
   .btn-primary:hover {
     @apply brightness-105;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px -6px hsl(180 39% 39% / 0.45);
+    box-shadow: 0 8px 24px -6px hsl(28 30% 55% / 0.45);
   }
 
   /* Secondary button */

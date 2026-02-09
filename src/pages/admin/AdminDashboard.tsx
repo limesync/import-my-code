@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import { Package, ShoppingCart, TrendingUp, AlertTriangle } from 'lucide-react';
 import { useAdminProducts } from '@/hooks/useAdminProducts';
 import { useAdminOrders } from '@/hooks/useAdminOrders';
+import { useAdminLocale } from '@/contexts/AdminLocaleContext';
 
 export default function AdminDashboard() {
   const { products, isLoading: productsLoading } = useAdminProducts();
   const { orders, isLoading: ordersLoading } = useAdminOrders();
+  const { t } = useAdminLocale();
 
   const isLoading = productsLoading || ordersLoading;
 
@@ -17,10 +19,10 @@ export default function AdminDashboard() {
   const lowStock = products.filter(p => p.variants.some(v => v.inventory <= 5)).length;
 
   const stats = [
-    { label: 'Produkter', value: totalProducts, sub: `${activeProducts} aktive`, icon: Package, color: 'text-primary' },
-    { label: 'Ordrer', value: totalOrders, sub: `${pendingOrders} afventer`, icon: ShoppingCart, color: 'text-accent' },
-    { label: 'Omsætning', value: `${totalRevenue.toLocaleString('da-DK')} kr`, sub: 'Total', icon: TrendingUp, color: 'text-primary' },
-    { label: 'Lavt lager', value: lowStock, sub: 'produkter', icon: AlertTriangle, color: 'text-destructive' },
+    { label: t('dashboard.products'), value: totalProducts, sub: `${activeProducts} ${t('dashboard.active')}`, icon: Package, color: 'text-primary' },
+    { label: t('dashboard.orders'), value: totalOrders, sub: `${pendingOrders} ${t('dashboard.pending')}`, icon: ShoppingCart, color: 'text-accent' },
+    { label: t('dashboard.revenue'), value: `${totalRevenue.toLocaleString('da-DK')} kr`, sub: t('dashboard.total'), icon: TrendingUp, color: 'text-primary' },
+    { label: t('dashboard.lowStock'), value: lowStock, sub: t('dashboard.productsLabel'), icon: AlertTriangle, color: 'text-destructive' },
   ];
 
   if (isLoading) {
@@ -34,11 +36,10 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-semibold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Overblik over din butik</p>
+        <h1 className="font-display text-3xl font-semibold text-foreground">{t('dashboard.title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('dashboard.subtitle')}</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map(stat => (
           <div key={stat.label} className="admin-card">
@@ -54,25 +55,24 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Recent orders */}
       <div className="admin-card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-xl font-semibold">Seneste ordrer</h2>
+          <h2 className="font-display text-xl font-semibold">{t('dashboard.recentOrders')}</h2>
           <Link to="/admin/ordrer" className="text-xs font-medium uppercase tracking-wider text-primary hover:underline">
-            Se alle
+            {t('dashboard.viewAll')}
           </Link>
         </div>
         {orders.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-8 text-center">Ingen ordrer endnu</p>
+          <p className="text-sm text-muted-foreground py-8 text-center">{t('dashboard.noOrders')}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Ordre</th>
-                  <th className="text-left py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Kunde</th>
-                  <th className="text-left py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</th>
-                  <th className="text-right py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Total</th>
+                  <th className="text-left py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('dashboard.order')}</th>
+                  <th className="text-left py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('dashboard.customer')}</th>
+                  <th className="text-left py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('dashboard.status')}</th>
+                  <th className="text-right py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">{t('dashboard.totalCol')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,24 +98,19 @@ export default function AdminDashboard() {
 }
 
 function OrderStatusBadge({ status }: { status: string }) {
+  const { t } = useAdminLocale();
   const styles: Record<string, string> = {
-    pending: 'bg-accent/20 text-accent',
+    pending: 'bg-accent/20 text-accent-foreground',
     confirmed: 'bg-primary/20 text-primary',
     shipped: 'bg-primary/10 text-primary',
     delivered: 'bg-primary/20 text-primary',
     cancelled: 'bg-destructive/20 text-destructive',
   };
-  const labels: Record<string, string> = {
-    pending: 'Afventer',
-    confirmed: 'Bekræftet',
-    shipped: 'Afsendt',
-    delivered: 'Leveret',
-    cancelled: 'Annulleret',
-  };
+  const key = `status.${status}` as any;
 
   return (
     <span className={`inline-block text-xs font-medium px-2 py-1 rounded ${styles[status] || ''}`}>
-      {labels[status] || status}
+      {t(key) || status}
     </span>
   );
 }
