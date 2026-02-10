@@ -94,7 +94,7 @@ export default function WishlistPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="store-container py-20 md:py-32">
+      <div className="store-container py-20 md:py-32"><div className="max-w-3xl mx-auto">
         <div className="max-w-lg mx-auto text-center">
           <div className="w-20 h-20 bg-blush/15 rounded-full flex items-center justify-center mx-auto mb-6">
             <Heart className="text-blush" size={32} />
@@ -110,21 +110,21 @@ export default function WishlistPage() {
           </Link>
         </div>
       </div>
-    );
+    </div>);
   }
 
   if (loading) {
     return (
-      <div className="store-container py-20 md:py-32">
+      <div className="store-container py-20 md:py-32"><div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
-      </div>
+      </div></div>
     );
   }
 
   return (
-    <div className="store-container py-12 md:py-20">
+    <div className="store-container py-12 md:py-20"><div className="max-w-3xl mx-auto">
       {/* Header */}
       <div className="mb-10 md:mb-14">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -161,7 +161,7 @@ export default function WishlistPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {items.map((item) => {
             const selectedId = selectedVariants[item.id];
             const selectedVariant = item.product.variants.find(v => v.id === selectedId) || item.product.variants[0];
@@ -277,6 +277,6 @@ export default function WishlistPage() {
           </Link>
         </div>
       )}
-    </div>
+    </div></div>
   );
 }
