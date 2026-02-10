@@ -55,18 +55,26 @@ export function useUserOrdersForProduct(productId: string, userId: string | unde
   return useQuery({
     queryKey: ['user-orders-for-product', productId, userId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('order_items')
-        .select('order_id, orders!order_items_order_id_fkey(id, status, user_id)')
-        .eq('product_id', productId);
+      // First get user's qualifying orders
+      const { data: orders, error: ordersError } = await supabase
+        .from('orders')
+        .select('id, status')
+        .eq('user_id', userId!)
+        .in('status', ['delivered', 'shipped', 'confirmed']);
       
-      if (error) throw error;
-      // Filter to user's delivered/shipped/confirmed orders
-      const validOrders = (data || []).filter((item: any) => {
-        const order = item.orders;
-        return order && order.user_id === userId && ['delivered', 'shipped', 'confirmed'].includes(order.status);
-      });
-      return validOrders;
+      if (ordersError) throw ordersError;
+      if (!orders || orders.length === 0) return [];
+
+      // Then check if any of those orders contain this product
+      const orderIds = orders.map(o => o.id);
+      const { data: items, error: itemsError } = await supabase
+        .from('order_items')
+        .select('order_id')
+        .eq('product_id', productId)
+        .in('order_id', orderIds);
+
+      if (itemsError) throw itemsError;
+      return items || [];
     },
     enabled: !!productId && !!userId,
   });
