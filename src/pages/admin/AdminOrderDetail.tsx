@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ArrowLeft, Package, Truck, Check, X, Clock, Send, MapPin, User, Mail, Phone, FileText, Loader2, RotateCcw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+// Button import removed - using design system classes directly
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
@@ -12,12 +12,12 @@ import { useAdminLocale } from '@/contexts/AdminLocaleContext';
 import type { TranslationKey } from '@/i18n/admin';
 
 const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; color: string; icon: typeof Clock }> = {
-  pending: { labelKey: 'status.pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-  confirmed: { labelKey: 'status.confirmed', color: 'bg-blue-100 text-blue-800', icon: Check },
-  shipped: { labelKey: 'status.shipped', color: 'bg-purple-100 text-purple-800', icon: Truck },
-  delivered: { labelKey: 'status.delivered', color: 'bg-green-100 text-green-800', icon: Package },
-  cancelled: { labelKey: 'status.cancelled', color: 'bg-red-100 text-red-800', icon: X },
-  refunded: { labelKey: 'status.refunded' as TranslationKey, color: 'bg-orange-100 text-orange-800', icon: RotateCcw },
+  pending: { labelKey: 'status.pending', color: 'bg-accent/10 text-accent', icon: Clock },
+  confirmed: { labelKey: 'status.confirmed', color: 'bg-primary/10 text-primary', icon: Check },
+  shipped: { labelKey: 'status.shipped', color: 'bg-accent/15 text-accent', icon: Truck },
+  delivered: { labelKey: 'status.delivered', color: 'bg-success/15 text-[hsl(var(--success))]', icon: Package },
+  cancelled: { labelKey: 'status.cancelled', color: 'bg-destructive/10 text-destructive', icon: X },
+  refunded: { labelKey: 'status.refunded' as TranslationKey, color: 'bg-primary/10 text-primary', icon: RotateCcw },
 };
 
 const STATUS_FLOW = ['pending', 'confirmed', 'shipped', 'delivered'];
@@ -231,39 +231,39 @@ export default function AdminOrderDetail() {
           <h3 className="font-medium mb-4">{t('orderDetail.actions')}</h3>
           <div className="flex flex-wrap gap-3">
             {order.status === 'pending' && (
-              <Button onClick={() => updateStatus.mutate({ newStatus: 'confirmed' })} className="gap-2" disabled={updateStatus.isPending}>
+              <button onClick={() => updateStatus.mutate({ newStatus: 'confirmed' })} className="btn-primary flex items-center gap-2 px-5 py-2.5 text-sm" disabled={updateStatus.isPending}>
                 {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} {t('orderDetail.confirmOrder')}
-              </Button>
+              </button>
             )}
             {order.status === 'confirmed' && (
-              <Button onClick={markAsShipped} className="gap-2" disabled={updateStatus.isPending}>
+              <button onClick={markAsShipped} className="btn-primary flex items-center gap-2 px-5 py-2.5 text-sm" disabled={updateStatus.isPending}>
                 {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Truck size={16} />} {t('orderDetail.markShipped')}
-              </Button>
+              </button>
             )}
             {order.status === 'shipped' && (
-              <Button onClick={() => updateStatus.mutate({ newStatus: 'delivered' })} className="gap-2" disabled={updateStatus.isPending}>
+              <button onClick={() => updateStatus.mutate({ newStatus: 'delivered' })} className="btn-primary flex items-center gap-2 px-5 py-2.5 text-sm" disabled={updateStatus.isPending}>
                 {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Package size={16} />} {t('orderDetail.markDelivered')}
-              </Button>
+              </button>
             )}
             {order.status !== 'delivered' && (
-              <Button variant="outline" onClick={() => updateStatus.mutate({ newStatus: 'cancelled', sendEmail: false })} className="text-destructive hover:text-destructive" disabled={updateStatus.isPending}>
+              <button onClick={() => updateStatus.mutate({ newStatus: 'cancelled', sendEmail: false })} className="btn-secondary flex items-center gap-2 px-5 py-2.5 text-sm text-destructive border-destructive/30 hover:bg-destructive/5" disabled={updateStatus.isPending}>
                 <X size={16} /> {t('orderDetail.cancelOrder')}
-              </Button>
+              </button>
             )}
             {canRefund && (
               <>
                 {showRefundConfirm ? (
-                  <div className="flex items-center gap-2 border border-orange-300 bg-orange-50 rounded-lg px-4 py-2">
-                    <span className="text-sm text-orange-800 font-medium">{t('orderDetail.confirmRefund')}</span>
-                    <Button size="sm" variant="destructive" onClick={() => updateStatus.mutate({ newStatus: 'refunded' })} disabled={updateStatus.isPending} className="bg-orange-600 hover:bg-orange-700">
+                  <div className="flex items-center gap-2 border border-primary/30 bg-primary/5 rounded-xl px-4 py-2.5">
+                    <span className="text-sm text-foreground font-medium">{t('orderDetail.confirmRefund')}</span>
+                    <button onClick={() => updateStatus.mutate({ newStatus: 'refunded' })} disabled={updateStatus.isPending} className="btn-primary px-4 py-1.5 text-xs">
                       {updateStatus.isPending ? <Loader2 size={14} className="animate-spin" /> : t('orderDetail.yesRefund')}
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setShowRefundConfirm(false)}>{t('orderDetail.no')}</Button>
+                    </button>
+                    <button onClick={() => setShowRefundConfirm(false)} className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">{t('orderDetail.no')}</button>
                   </div>
                 ) : (
-                  <Button variant="outline" onClick={() => setShowRefundConfirm(true)} className="gap-2 text-orange-700 border-orange-300 hover:bg-orange-50 hover:text-orange-800">
+                  <button onClick={() => setShowRefundConfirm(true)} className="btn-secondary flex items-center gap-2 px-5 py-2.5 text-sm">
                     <RotateCcw size={16} /> {t('orderDetail.refundOrder')}
-                  </Button>
+                  </button>
                 )}
               </>
             )}
@@ -273,12 +273,12 @@ export default function AdminOrderDetail() {
 
       {/* Refunded banner */}
       {order.status === 'refunded' && (
-        <div className="admin-card mb-6 border-orange-200 bg-orange-50">
+        <div className="admin-card mb-6 border-primary/20 bg-primary/5">
           <div className="flex items-center gap-3">
-            <RotateCcw size={20} className="text-orange-600" />
+            <RotateCcw size={20} className="text-primary" />
             <div>
-              <p className="font-medium text-orange-800">{t('orderDetail.refundedBanner')}</p>
-              <p className="text-sm text-orange-600">
+              <p className="font-medium text-foreground">{t('orderDetail.refundedBanner')}</p>
+              <p className="text-sm text-muted-foreground">
                 {t('orderDetail.refundedDate')} {order.status_updated_at ? new Date(order.status_updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
               </p>
             </div>
@@ -301,10 +301,10 @@ export default function AdminOrderDetail() {
             </div>
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => { saveTracking.mutate(); updateStatus.mutate({ newStatus: 'shipped' }); }} disabled={saveTracking.isPending || updateStatus.isPending}>
-              {(saveTracking.isPending || updateStatus.isPending) && <Loader2 size={16} className="animate-spin mr-2" />} {t('orderDetail.saveAndShip')}
-            </Button>
-            <Button variant="outline" onClick={() => setShowTrackingForm(false)}>{t('orderDetail.cancelBtn')}</Button>
+            <button onClick={() => { saveTracking.mutate(); updateStatus.mutate({ newStatus: 'shipped' }); }} disabled={saveTracking.isPending || updateStatus.isPending} className="btn-primary flex items-center gap-2 px-5 py-2.5 text-sm">
+              {(saveTracking.isPending || updateStatus.isPending) && <Loader2 size={16} className="animate-spin" />} {t('orderDetail.saveAndShip')}
+            </button>
+            <button onClick={() => setShowTrackingForm(false)} className="btn-secondary px-5 py-2.5 text-sm">{t('orderDetail.cancelBtn')}</button>
           </div>
         </div>
       )}
@@ -318,7 +318,7 @@ export default function AdminOrderDetail() {
             <div className="divide-y">
               {order.items.map((item: { id: string; image_url: string | null; resolved_image: string | null; product_title: string; variant_name: string; quantity: number; price: number }) => (
                 <div key={item.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-                  <div className="w-16 h-16 bg-secondary rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 bg-secondary rounded-xl overflow-hidden flex-shrink-0">
                     {(item.resolved_image || item.image_url) ? (
                       <img src={item.resolved_image || item.image_url!} alt={item.product_title} className="w-full h-full object-cover" />
                     ) : (
@@ -367,7 +367,7 @@ export default function AdminOrderDetail() {
           <div className="admin-card">
             <h3 className="font-medium mb-4 flex items-center gap-2"><FileText size={18} /> {t('orderDetail.notes')}</h3>
             <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('orderDetail.notesPlaceholder')} className="mb-3" rows={4} />
-            <Button variant="outline" size="sm" onClick={() => saveNotes.mutate()} disabled={saveNotes.isPending}>{t('orderDetail.saveNotes')}</Button>
+            <button onClick={() => saveNotes.mutate()} disabled={saveNotes.isPending} className="btn-secondary px-4 py-2 text-sm">{t('orderDetail.saveNotes')}</button>
           </div>
         </div>
 
@@ -406,7 +406,7 @@ export default function AdminOrderDetail() {
                   )}
                 </div>
               ) : (
-                <Button variant="outline" size="sm" onClick={() => setShowTrackingForm(true)} className="w-full">{t('orderDetail.addTracking')}</Button>
+                <button onClick={() => setShowTrackingForm(true)} className="btn-secondary w-full px-4 py-2.5 text-sm">{t('orderDetail.addTracking')}</button>
               )}
             </div>
           )}
