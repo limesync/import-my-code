@@ -6,7 +6,13 @@ export default function ShippingPage() {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="font-display text-4xl md:text-5xl font-semibold mb-6">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="h-px w-12 bg-accent/40" />
+            <span className="text-accent text-lg">◆</span>
+            <div className="h-px w-12 bg-accent/40" />
+          </div>
+          <span className="section-label">Fragt & Levering</span>
+          <h1 className="section-title mb-6">
             Levering
           </h1>
           <p className="text-lg text-muted-foreground">
@@ -16,7 +22,7 @@ export default function ShippingPage() {
 
         {/* Shipping Options */}
         <div className="grid md:grid-cols-2 gap-6 mb-16">
-          <div className="bg-card border rounded-xl p-6">
+          <div className="bg-card border rounded-2xl p-6 transition-all duration-300 hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                 <Truck className="text-primary" size={24} />
@@ -39,7 +45,7 @@ export default function ShippingPage() {
             </div>
           </div>
 
-          <div className="bg-card border rounded-xl p-6">
+          <div className="bg-card border rounded-2xl p-6 transition-all duration-300 hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
                 <Clock className="text-accent" size={24} />
@@ -67,14 +73,8 @@ export default function ShippingPage() {
               Ordrebehandling
             </h2>
             <div className="prose max-w-none text-muted-foreground">
-              <p>
-                Alle ordrer behandles inden for 1-2 hverdage. Du modtager en 
-                bekræftelsesmail, når din ordre er afsendt, med et trackingnummer, 
-                så du kan følge din pakke.
-              </p>
-              <p>
-                Ordrer afgivet inden kl. 14:00 på hverdage afsendes normalt samme dag.
-              </p>
+              <p>Alle ordrer behandles inden for 1-2 hverdage. Du modtager en bekræftelsesmail, når din ordre er afsendt, med et trackingnummer, så du kan følge din pakke.</p>
+              <p>Ordrer afgivet inden kl. 14:00 på hverdage afsendes normalt samme dag.</p>
             </div>
           </section>
 
@@ -84,10 +84,7 @@ export default function ShippingPage() {
               Leveringsområde
             </h2>
             <div className="prose max-w-none text-muted-foreground">
-              <p>
-                Vi leverer til alle adresser i Danmark, inklusive Færøerne og Grønland. 
-                For leveringer til Færøerne og Grønland kan leveringstiden være længere.
-              </p>
+              <p>Vi leverer til alle adresser i Danmark, inklusive Færøerne og Grønland. For leveringer til Færøerne og Grønland kan leveringstiden være længere.</p>
             </div>
           </section>
 
@@ -97,18 +94,13 @@ export default function ShippingPage() {
               Afhentning
             </h2>
             <div className="prose max-w-none text-muted-foreground">
-              <p>
-                Din pakke afleveres i din valgte pakkeshop, hvor den ligger klar til 
-                afhentning i op til 8 dage. Du modtager en SMS, når pakken er klar.
-              </p>
-              <p>
-                Husk at medbringe legitimation ved afhentning.
-              </p>
+              <p>Din pakke afleveres i din valgte pakkeshop, hvor den ligger klar til afhentning i op til 8 dage. Du modtager en SMS, når pakken er klar.</p>
+              <p>Husk at medbringe legitimation ved afhentning.</p>
             </div>
           </section>
 
           {/* Delivery Table */}
-          <section className="bg-secondary/30 rounded-xl p-6">
+          <section className="bg-secondary/30 rounded-2xl p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h3 className="font-display text-lg font-medium mb-4">Oversigt over fragtpriser</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

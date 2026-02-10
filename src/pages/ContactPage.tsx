@@ -17,10 +17,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
     toast.success('Tak for din besked! Vi vender tilbage hurtigst muligt.');
     setFormData({ name: '', email: '', subject: '', message: '' });
     setIsSubmitting(false);
@@ -31,7 +28,13 @@ export default function ContactPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="font-display text-4xl md:text-5xl font-semibold mb-6">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="h-px w-12 bg-accent/40" />
+            <span className="text-accent text-lg">◆</span>
+            <div className="h-px w-12 bg-accent/40" />
+          </div>
+          <span className="section-label">Kontakt</span>
+          <h1 className="section-title mb-6">
             Kontakt os
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -48,57 +51,26 @@ export default function ContactPage() {
                 Kontaktinformation
               </h2>
               <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="text-primary" size={18} />
+                {[
+                  { icon: Mail, label: 'Email', content: <a href="mailto:hej@thumbie.dk" className="text-muted-foreground hover:text-primary transition-colors">hej@thumbie.dk</a> },
+                  { icon: Phone, label: 'Telefon', content: <a href="tel:+4512345678" className="text-muted-foreground hover:text-primary transition-colors">+45 12 34 56 78</a> },
+                  { icon: MapPin, label: 'Adresse', content: <p className="text-muted-foreground">Designvej 42<br />2100 København Ø<br />Danmark</p> },
+                  { icon: Clock, label: 'Åbningstider', content: <p className="text-muted-foreground">Man - Fre: 09:00 - 17:00<br />Weekend: Lukket</p> },
+                ].map(({ icon: Icon, label, content }, i) => (
+                  <div key={i} className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Icon className="text-primary" size={18} />
+                    </div>
+                    <div>
+                      <p className="font-medium">{label}</p>
+                      {content}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">Email</p>
-                    <a href="mailto:hej@thumbie.dk" className="text-muted-foreground hover:text-primary transition-colors">
-                      hej@thumbie.dk
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="text-primary" size={18} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Telefon</p>
-                    <a href="tel:+4512345678" className="text-muted-foreground hover:text-primary transition-colors">
-                      +45 12 34 56 78
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="text-primary" size={18} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Adresse</p>
-                    <p className="text-muted-foreground">
-                      Designvej 42<br />
-                      2100 København Ø<br />
-                      Danmark
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Clock className="text-primary" size={18} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Åbningstider</p>
-                    <p className="text-muted-foreground">
-                      Man - Fre: 09:00 - 17:00<br />
-                      Weekend: Lukket
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            <div className="bg-secondary/30 rounded-xl p-6">
+            <div className="bg-secondary/30 rounded-2xl p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
               <h3 className="font-display text-lg font-medium mb-2">
                 Hurtig support
               </h3>
@@ -111,7 +83,7 @@ export default function ContactPage() {
 
           {/* Contact Form */}
           <div className="lg:col-span-3">
-            <div className="bg-card border rounded-2xl p-8">
+            <div className="bg-card border rounded-2xl p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
               <h2 className="font-display text-xl font-semibold mb-6">
                 Send os en besked
               </h2>
@@ -156,10 +128,10 @@ export default function ContactPage() {
                     required
                   />
                 </div>
-                <Button type="submit" disabled={isSubmitting} className="w-full gap-2">
+                <button type="submit" disabled={isSubmitting} className="btn-primary w-full flex items-center justify-center gap-2">
                   <Send size={16} />
                   {isSubmitting ? 'Sender...' : 'Send besked'}
-                </Button>
+                </button>
               </form>
             </div>
           </div>
