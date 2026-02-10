@@ -31,7 +31,7 @@ export default function StorySection() {
         </div>
 
         {/* Right - Image with decorative accent elements */}
-        <div className="relative">
+        <div className="relative overflow-hidden">
           <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg">
             <img
               src={storyImage}
