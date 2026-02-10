@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 export default function CookiesPage() {
   return (
     <div className="store-container py-16 md:py-24">
-      <div className="max-w-5xl mx-auto">
+      <div>
         {/* Header */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-6">

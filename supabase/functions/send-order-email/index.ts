@@ -9,7 +9,7 @@ const corsHeaders = {
 
 interface EmailRequest {
   orderId: string;
-  emailType: "order_confirmation" | "order_shipped" | "order_delivered";
+  emailType: "order_confirmation" | "order_shipped" | "order_delivered" | "order_refunded";
   trackingNumber?: string;
   trackingUrl?: string;
 }
@@ -133,6 +133,45 @@ const EMAIL_TEMPLATES = {
       </body></html>
     `,
   },
+  order_refunded: {
+    subject: `Din ordre er refunderet - ${BRAND.name}`,
+    getHtml: (order: OrderData) => `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+      <body style="margin:0;padding:0;font-family:'Helvetica Neue',Arial,sans-serif;background-color:${BRAND.bgColor};">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background-color:#ffffff;">
+          <tr><td style="padding:40px 30px;text-align:center;background-color:${BRAND.darkColor};">
+            <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:600;letter-spacing:2px;">◆ ${BRAND.name} ◆</h1>
+          </td></tr>
+          <tr><td style="padding:40px 30px;">
+            <div style="text-align:center;margin-bottom:30px;">
+              <div style="font-size:48px;margin-bottom:10px;">💰</div>
+              <h2 style="margin:0;color:${BRAND.darkColor};font-size:24px;">Din ordre er refunderet</h2>
+            </div>
+            <p style="margin:0 0 20px;color:#666;line-height:1.6;">Hej ${order.customerName},<br><br>Vi bekræfter hermed, at din ordre ${order.orderNumber} er blevet refunderet.</p>
+            <div style="background-color:${BRAND.bgColor};padding:25px;border-radius:12px;margin:30px 0;text-align:center;">
+              <p style="margin:0 0 10px;font-size:14px;color:#666;">Refunderet beløb</p>
+              <p style="margin:0;font-size:24px;font-weight:600;color:${BRAND.darkColor};">${order.total.toLocaleString('da-DK')} kr</p>
+              <p style="margin:15px 0 0;font-size:14px;color:#666;">Beløbet vil blive tilbageført til din konto inden for 5-10 hverdage.</p>
+            </div>
+            <h3 style="margin:30px 0 15px;color:${BRAND.darkColor};font-size:16px;border-bottom:1px solid #E5D8C8;padding-bottom:10px;">Refunderede produkter</h3>
+            ${order.items.map(item => `
+              <div style="padding:15px 0;border-bottom:1px solid #f0f0f0;">
+                <p style="margin:0;font-weight:500;color:${BRAND.darkColor};">${item.product_title}</p>
+                <p style="margin:5px 0 0;font-size:14px;color:#666;">${item.variant_name} × ${item.quantity} — ${(item.price * item.quantity).toLocaleString('da-DK')} kr</p>
+              </div>
+            `).join('')}
+            <p style="margin:20px 0 0;color:#666;line-height:1.6;">Har du spørgsmål til din refundering, er du velkommen til at kontakte os.</p>
+          </td></tr>
+          <tr><td style="padding:30px;background-color:${BRAND.bgColor};text-align:center;">
+            <p style="margin:0;color:#666;font-size:14px;">Har du spørgsmål? Kontakt os på <a href="mailto:${BRAND.email}" style="color:${BRAND.color};">${BRAND.email}</a></p>
+            <p style="margin:15px 0 0;color:#999;font-size:12px;">© ${new Date().getFullYear()} ${BRAND.name}. Alle rettigheder forbeholdes.</p>
+          </td></tr>
+        </table>
+      </body></html>
+    `,
+  },
 };
 
 interface OrderItem {
@@ -213,12 +252,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!orderData.customerEmail) throw new Error("No customer email found for this order");
 
-    const template = EMAIL_TEMPLATES[emailType];
+    const template = EMAIL_TEMPLATES[emailType as keyof typeof EMAIL_TEMPLATES];
     if (!template) throw new Error(`Unknown email type: ${emailType}`);
 
     const html = emailType === 'order_shipped' 
-      ? template.getHtml(orderData, trackingNumber, trackingUrl)
-      : template.getHtml(orderData);
+      ? (template as typeof EMAIL_TEMPLATES.order_shipped).getHtml(orderData, trackingNumber, trackingUrl)
+      : (template as typeof EMAIL_TEMPLATES.order_confirmation).getHtml(orderData);
 
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",

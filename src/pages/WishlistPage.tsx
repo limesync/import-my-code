@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Trash2, ShoppingBag, ArrowRight, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,6 +24,20 @@ interface WishlistItem {
       inventory: number;
     }>;
   };
+}
+
+const VARIANT_STORAGE_KEY = 'wishlist_selected_variants';
+
+function getStoredVariants(): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(VARIANT_STORAGE_KEY) || '{}');
+  } catch { return {}; }
+}
+
+function storeVariant(wishlistItemId: string, variantId: string) {
+  const stored = getStoredVariants();
+  stored[wishlistItemId] = variantId;
+  localStorage.setItem(VARIANT_STORAGE_KEY, JSON.stringify(stored));
 }
 
 export default function WishlistPage() {
@@ -59,16 +73,26 @@ export default function WishlistPage() {
     } else {
       const wishlistItems = (data as unknown as WishlistItem[]) || [];
       setItems(wishlistItems);
+      
+      // Restore saved variants from localStorage, fallback to first variant
+      const stored = getStoredVariants();
       const defaults: Record<string, string> = {};
       wishlistItems.forEach(item => {
         if (item.product.variants.length > 0) {
-          defaults[item.id] = item.product.variants[0].id;
+          const savedVariant = stored[item.id];
+          const validSaved = savedVariant && item.product.variants.some(v => v.id === savedVariant);
+          defaults[item.id] = validSaved ? savedVariant : item.product.variants[0].id;
         }
       });
       setSelectedVariants(defaults);
     }
     setLoading(false);
   };
+
+  const handleVariantChange = useCallback((wishlistItemId: string, variantId: string) => {
+    setSelectedVariants(prev => ({ ...prev, [wishlistItemId]: variantId }));
+    storeVariant(wishlistItemId, variantId);
+  }, []);
 
   const removeFromWishlist = async (wishlistId: string) => {
     const { error } = await supabase.from('wishlist').delete().eq('id', wishlistId);
@@ -94,7 +118,7 @@ export default function WishlistPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="store-container py-20 md:py-32"><div className="max-w-3xl mx-auto">
+      <div className="store-container py-20 md:py-32">
         <div className="max-w-lg mx-auto text-center">
           <div className="w-20 h-20 bg-blush/15 rounded-full flex items-center justify-center mx-auto mb-6">
             <Heart className="text-blush" size={32} />
@@ -110,21 +134,21 @@ export default function WishlistPage() {
           </Link>
         </div>
       </div>
-    </div>);
+    );
   }
 
   if (loading) {
     return (
-      <div className="store-container py-20 md:py-32"><div className="max-w-3xl mx-auto">
+      <div className="store-container py-20 md:py-32">
         <div className="flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
-      </div></div>
+      </div>
     );
   }
 
   return (
-    <div className="store-container py-12 md:py-20"><div className="max-w-3xl mx-auto">
+    <div className="store-container py-12 md:py-20">
       {/* Header */}
       <div className="mb-10 md:mb-14">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -132,21 +156,22 @@ export default function WishlistPage() {
           <span>/</span>
           <span className="text-foreground font-medium">Ønskeliste</span>
         </div>
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground mb-2">
-              Din ønskeliste
-            </h1>
-            <p className="text-muted-foreground">
-              {items.length} {items.length === 1 ? 'produkt' : 'produkter'} gemt
-            </p>
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="h-px w-12 bg-accent/40" />
+            <span className="text-accent text-lg">◆</span>
+            <div className="h-px w-12 bg-accent/40" />
           </div>
-          <Heart className="text-blush hidden md:block" size={36} fill="currentColor" />
+          <span className="section-label">Dine favoritter</span>
+          <h1 className="section-title mb-3">Din ønskeliste</h1>
+          <p className="text-muted-foreground">
+            {items.length} {items.length === 1 ? 'produkt' : 'produkter'} gemt
+          </p>
         </div>
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-20 bg-card rounded-3xl border border-border">
+        <div className="text-center py-20 bg-card rounded-3xl border border-border" style={{ boxShadow: 'var(--shadow-card)' }}>
           <div className="w-20 h-20 bg-blush/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Heart className="text-blush/40" size={32} />
           </div>
@@ -161,7 +186,7 @@ export default function WishlistPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="product-grid">
           {items.map((item) => {
             const selectedId = selectedVariants[item.id];
             const selectedVariant = item.product.variants.find(v => v.id === selectedId) || item.product.variants[0];
@@ -170,14 +195,11 @@ export default function WishlistPage() {
               ? Math.round((1 - selectedVariant.price / selectedVariant.compare_at_price!) * 100) : 0;
 
             return (
-              <div
-                key={item.id}
-                className="bg-card rounded-2xl border border-border overflow-hidden group hover:shadow-lg transition-all duration-500"
-              >
-                {/* Image */}
+              <div key={item.id} className="product-card group">
+                {/* Image - matches ProductCard aspect ratio */}
                 <Link
                   to={`/produkt/${item.product.slug}`}
-                  className="block relative aspect-square overflow-hidden bg-secondary"
+                  className="block relative aspect-square overflow-hidden bg-secondary/30 rounded-t-2xl"
                 >
                   <img
                     src={getProductImage(item.product.slug)}
@@ -199,19 +221,19 @@ export default function WishlistPage() {
                   </button>
                 </Link>
 
-                {/* Content */}
-                <div className="p-5">
-                  <p className="text-xs text-accent uppercase tracking-widest font-semibold mb-1">{item.product.category}</p>
+                {/* Content - matches ProductCard styling */}
+                <div className="p-4">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{item.product.category}</p>
                   <Link
                     to={`/produkt/${item.product.slug}`}
-                    className="font-display text-lg font-medium text-foreground hover:text-primary transition-colors block mb-3"
+                    className="font-display text-lg font-medium text-foreground hover:text-primary transition-colors block mb-2"
                   >
                     {item.product.title}
                   </Link>
 
                   {/* Price */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-lg font-bold text-foreground">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-base font-semibold text-foreground">
                       {selectedVariant && formatPrice(selectedVariant.price)}
                     </span>
                     {hasDiscount && (
@@ -223,13 +245,13 @@ export default function WishlistPage() {
 
                   {/* Variant selection */}
                   {item.product.variants.length > 1 && (
-                    <div className="mb-4">
-                      <div className="flex flex-wrap gap-1.5">
+                    <div className="mb-3">
+                      <div className="flex flex-wrap gap-1">
                         {item.product.variants.map(v => (
                           <button
                             key={v.id}
-                            onClick={() => setSelectedVariants(prev => ({ ...prev, [item.id]: v.id }))}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                            onClick={() => handleVariantChange(item.id, v.id)}
+                            className={`px-2 py-1 rounded-md text-xs font-medium transition-all border ${
                               v.id === selectedId
                                 ? 'bg-foreground text-background border-foreground'
                                 : 'bg-background text-foreground border-border hover:border-foreground/30'
@@ -243,24 +265,27 @@ export default function WishlistPage() {
                     </div>
                   )}
 
-                  {/* Low stock indicator */}
+                  {/* Low stock */}
                   {selectedVariant && selectedVariant.inventory > 0 && selectedVariant.inventory <= 5 && (
-                    <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-3">
-                      <Sparkles size={13} />
+                    <div className="flex items-center gap-1.5 text-xs text-primary font-medium mb-2">
+                      <Sparkles size={12} />
                       Kun {selectedVariant.inventory} tilbage
                     </div>
                   )}
 
                   {/* Add to cart */}
-                  <Button
+                  <button
                     onClick={() => handleAddToCart(item)}
                     disabled={!selectedVariant || selectedVariant.inventory <= 0}
-                    className="w-full gap-2 rounded-xl"
-                    variant={selectedVariant && selectedVariant.inventory > 0 ? 'default' : 'secondary'}
+                    className={`w-full py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
+                      selectedVariant && selectedVariant.inventory > 0
+                        ? 'bg-foreground text-background hover:bg-foreground/90'
+                        : 'bg-secondary text-muted-foreground cursor-not-allowed'
+                    }`}
                   >
-                    <ShoppingBag size={16} />
+                    <ShoppingBag size={15} />
                     {!selectedVariant || selectedVariant.inventory <= 0 ? 'Udsolgt' : 'Tilføj til kurv'}
-                  </Button>
+                  </button>
                 </div>
               </div>
             );
@@ -268,7 +293,7 @@ export default function WishlistPage() {
         </div>
       )}
 
-      {/* Continue shopping link */}
+      {/* Continue shopping */}
       {items.length > 0 && (
         <div className="text-center mt-12">
           <Link to="/produkter" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group">
@@ -277,6 +302,6 @@ export default function WishlistPage() {
           </Link>
         </div>
       )}
-    </div></div>
+    </div>
   );
 }
