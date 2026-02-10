@@ -283,10 +283,16 @@ export function useAdminProduct(id: string | undefined) {
         supabase.from('product_images').select('*').eq('product_id', id).order('sort_order'),
       ]);
 
+      // Apply same image fallback logic as list view
+      const dbImages = imagesResult.data || [];
+      const images = dbImages.length > 0 && dbImages[0].url.startsWith('http')
+        ? dbImages
+        : [{ id: 'static', product_id: id, url: getProductImage(product.slug), alt: product.title, sort_order: 0 }];
+
       return {
         ...product,
         variants: variantsResult.data || [],
-        images: imagesResult.data || [],
+        images,
       } as AdminProduct;
     },
     enabled: !!id && id !== 'ny',
