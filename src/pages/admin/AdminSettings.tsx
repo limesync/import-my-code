@@ -46,6 +46,16 @@ export default function AdminSettings() {
             >
               🇬🇧 {t('settings.english')}
             </button>
+            <button
+              onClick={() => handleLanguageChange('ur')}
+              className={`px-5 py-3 rounded-lg text-sm font-medium transition-all border ${
+                locale === 'ur'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'bg-background text-foreground border-border hover:border-foreground/30'
+              }`}
+            >
+              🇵🇰 {t('settings.urdu')}
+            </button>
           </div>
         </div>
       </div>
