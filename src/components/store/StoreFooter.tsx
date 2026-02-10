@@ -28,9 +28,9 @@ export default function StoreFooter() {
   return (
     <footer className="bg-secondary/50 border-t border-border">
       <div className="store-container py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-2">
+          <div className="sm:col-span-2 md:col-span-2">
             <Link to="/" className="inline-block mb-4">
               <h3 className="font-display text-2xl font-semibold text-foreground">
                 Thumbie
@@ -125,10 +125,10 @@ export default function StoreFooter() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground text-center md:text-left">
             © 2025 Thumbie. Alle rettigheder forbeholdes.
           </p>
-          <div className="flex items-center gap-6 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted-foreground">
             <Link to="/privatlivspolitik" className="hover:text-foreground transition-colors">
               Privatlivspolitik
             </Link>
