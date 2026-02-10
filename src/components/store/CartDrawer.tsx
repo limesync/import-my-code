@@ -34,7 +34,7 @@ export default function CartDrawer() {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent className="w-full sm:max-w-md flex flex-col p-0">
-        <SheetHeader className="p-6 border-b border-border">
+        <SheetHeader className="p-6 border-b border-border bg-card">
           <div className="flex items-center justify-between">
             <SheetTitle className="font-display text-xl">
               Indkøbskurv ({items.length})
@@ -44,7 +44,7 @@ export default function CartDrawer() {
 
         {/* Free shipping progress */}
         {items.length > 0 && (
-          <div className="px-6 py-4 bg-secondary/30 border-b border-border">
+          <div className="px-6 py-4 bg-accent/5 border-b border-border">
             {amountToFreeShipping > 0 ? (
               <>
                 <p className="text-sm text-muted-foreground mb-2">
@@ -90,12 +90,13 @@ export default function CartDrawer() {
               {cartDetails.map((item) => (
                 <div
                   key={item.variantId}
-                  className="flex gap-4 p-4 bg-secondary/20 rounded-xl"
+                  className="flex gap-4 p-4 bg-card border border-border rounded-2xl"
+                  style={{ boxShadow: 'var(--shadow-product)' }}
                 >
                   <Link
                     to={`/produkt/${item.product!.slug}`}
                     onClick={() => setIsOpen(false)}
-                    className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-secondary"
+                    className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-secondary"
                   >
                     <img
                       src={getProductImage(item.product!.slug)}
@@ -155,7 +156,7 @@ export default function CartDrawer() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-border p-6 space-y-4">
+          <div className="border-t border-border p-6 space-y-4 bg-card">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
@@ -164,12 +165,12 @@ export default function CartDrawer() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Fragt</span>
                 <span className="font-medium">
-                  {shipping === 0 ? 'Gratis' : formatPrice(shipping)}
+                  {shipping === 0 ? <span className="text-success">Gratis</span> : formatPrice(shipping)}
                 </span>
               </div>
-              <div className="flex justify-between text-base pt-2 border-t border-border">
-                <span className="font-medium">Total</span>
-                <span className="font-semibold">{formatPrice(total)}</span>
+              <div className="flex justify-between text-base pt-3 border-t border-border">
+                <span className="font-semibold">Total</span>
+                <span className="font-display text-lg font-semibold">{formatPrice(total)}</span>
               </div>
             </div>
 

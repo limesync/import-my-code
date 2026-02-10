@@ -4,7 +4,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useProducts, getProductImage, formatPrice } from '@/hooks/useProducts';
 import { useCreateOrder } from '@/hooks/useOrders';
-import { ChevronLeft, Lock, CreditCard, Truck, Check } from 'lucide-react';
+import { ChevronLeft, Lock, CreditCard, Truck, Check, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CheckoutPage() {
@@ -112,164 +112,117 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="store-container py-8 md:py-14">
+    <div className="store-container py-10 md:py-16">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-10">
         <Link 
           to="/produkter" 
-          className="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+          className="group inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider mb-6"
         >
-          <ChevronLeft size={16} className="transition-transform group-hover:-translate-x-1" />
+          <ChevronLeft size={14} className="transition-transform group-hover:-translate-x-1" />
           Fortsæt shopping
         </Link>
-        <h1 className="font-display text-3xl md:text-4xl text-foreground">
-          Checkout
-        </h1>
+
+        <div className="flex items-center gap-2 mb-2">
+          <span className="section-label">◆ Kasse</span>
+        </div>
+        <h1 className="section-title text-3xl md:text-4xl">Gennemfør din ordre</h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
         {/* Form */}
-        <div className="lg:col-span-3">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Contact */}
-            <section>
-              <h2 className="font-display text-xl font-medium text-foreground mb-4">
-                Kontaktoplysninger
-              </h2>
-              {!isAuthenticated && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  Har du en konto?{' '}
-                  <Link to="/login" className="text-primary font-medium hover:underline">
-                    Log ind
-                  </Link>
-                </p>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  placeholder="Fornavn"
-                  className="input-cozy"
-                  required
-                />
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  placeholder="Efternavn"
-                  className="input-cozy"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Email"
-                  className="input-cozy md:col-span-2"
-                  required
-                />
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="Telefon"
-                  className="input-cozy md:col-span-2"
-                  required
-                />
-              </div>
-            </section>
+        <div className="lg:col-span-3 space-y-8">
+          {/* Contact */}
+          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <h2 className="font-display text-xl font-medium text-foreground mb-1">
+              Kontaktoplysninger
+            </h2>
+            {!isAuthenticated && (
+              <p className="text-sm text-muted-foreground mb-5">
+                Har du en konto?{' '}
+                <Link to="/login" className="text-primary font-medium hover:underline">
+                  Log ind
+                </Link>
+              </p>
+            )}
+            {isAuthenticated && <div className="mb-5" />}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="Fornavn" className="input-cozy" required />
+              <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Efternavn" className="input-cozy" required />
+              <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Email" className="input-cozy md:col-span-2" required />
+              <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="Telefon" className="input-cozy md:col-span-2" required />
+            </div>
+          </div>
 
-            {/* Shipping */}
-            <section>
-              <h2 className="font-display text-xl font-medium text-foreground mb-4">
-                Leveringsadresse
-              </h2>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  placeholder="Adresse"
-                  className="input-cozy"
-                  required
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    placeholder="Postnummer"
-                    className="input-cozy"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder="By"
-                    className="input-cozy"
-                    required
-                  />
-                </div>
+          {/* Shipping address */}
+          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <h2 className="font-display text-xl font-medium text-foreground mb-5">
+              Leveringsadresse
+            </h2>
+            <div className="space-y-4">
+              <input type="text" name="address" value={formData.address} onChange={handleInputChange} placeholder="Adresse" className="input-cozy" required />
+              <div className="grid grid-cols-2 gap-4">
+                <input type="text" name="zip" value={formData.zip} onChange={handleInputChange} placeholder="Postnummer" className="input-cozy" required />
+                <input type="text" name="city" value={formData.city} onChange={handleInputChange} placeholder="By" className="input-cozy" required />
               </div>
-            </section>
+            </div>
+          </div>
 
-            {/* Shipping method */}
-            <section>
-              <h2 className="font-display text-xl font-medium text-foreground mb-4">
-                Leveringsmetode
-              </h2>
-              <div className="border border-primary rounded-xl p-4 flex items-center gap-4 bg-primary/5">
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Truck size={18} className="text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Standardlevering</p>
-                  <p className="text-sm text-muted-foreground">2-4 hverdage</p>
-                </div>
-                <div className="font-medium">
-                  {shipping === 0 ? 'Gratis' : formatPrice(shipping)}
-                </div>
-                <Check size={18} className="text-primary" />
+          {/* Shipping method */}
+          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <h2 className="font-display text-xl font-medium text-foreground mb-5">
+              Leveringsmetode
+            </h2>
+            <div className="border-2 border-primary rounded-xl p-4 flex items-center gap-4 bg-primary/5">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <Truck size={18} className="text-primary" />
               </div>
-            </section>
-
-            {/* Payment info (demo) */}
-            <section>
-              <h2 className="font-display text-xl font-medium text-foreground mb-4">
-                Betaling
-              </h2>
-              <div className="border border-border rounded-xl p-6 bg-secondary/20 text-center">
-                <CreditCard size={32} className="mx-auto mb-3 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  Dette er en demo-butik. Ingen betaling vil blive gennemført.
-                </p>
+              <div className="flex-1">
+                <p className="font-medium text-foreground text-sm">Standardlevering</p>
+                <p className="text-xs text-muted-foreground">2-4 hverdage</p>
               </div>
-            </section>
+              <div className="font-display font-semibold">
+                {shipping === 0 ? 'Gratis' : formatPrice(shipping)}
+              </div>
+              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                <Check size={14} className="text-primary-foreground" />
+              </div>
+            </div>
+          </div>
 
-            {/* Submit */}
+          {/* Payment info (demo) */}
+          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+            <h2 className="font-display text-xl font-medium text-foreground mb-5">
+              Betaling
+            </h2>
+            <div className="border border-border rounded-xl p-8 bg-secondary/30 text-center">
+              <CreditCard size={36} className="mx-auto mb-3 text-muted-foreground/60" />
+              <p className="text-sm text-muted-foreground">
+                Dette er en demo-butik. Ingen betaling vil blive gennemført.
+              </p>
+            </div>
+          </div>
+
+          {/* Submit */}
+          <form onSubmit={handleSubmit}>
             <button
               type="submit"
               disabled={createOrder.isPending}
-              className="btn-primary w-full py-4 flex items-center justify-center gap-2"
+              className="btn-primary w-full py-4 flex items-center justify-center gap-2 text-base"
             >
               <Lock size={16} />
               {createOrder.isPending ? 'Behandler...' : `Gennemfør ordre · ${formatPrice(total)}`}
             </button>
+            <div className="flex items-center justify-center gap-2 mt-4 text-xs text-muted-foreground">
+              <ShieldCheck size={14} />
+              <span>Sikker bestilling · SSL-krypteret</span>
+            </div>
           </form>
         </div>
 
-        {/* Order summary */}
+        {/* Order summary sidebar */}
         <div className="lg:col-span-2">
-          <div className="sticky top-28 bg-card border border-border rounded-2xl p-6">
+          <div className="sticky top-28 bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h2 className="font-display text-xl font-medium text-foreground mb-6">
               Ordreoversigt
             </h2>
@@ -277,7 +230,7 @@ export default function CheckoutPage() {
             <div className="space-y-4 mb-6">
               {cartDetails.map((item) => (
                 <div key={item.variantId} className="flex gap-4">
-                  <div className="w-16 h-16 bg-secondary rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 bg-secondary rounded-xl overflow-hidden flex-shrink-0">
                     <img
                       src={getProductImage(item.product!.slug)}
                       alt={item.product!.title}
@@ -292,32 +245,34 @@ export default function CheckoutPage() {
                       {item.variant!.name} × {item.quantity}
                     </p>
                   </div>
-                  <p className="font-medium text-sm">
+                  <p className="font-display font-semibold text-sm">
                     {formatPrice(item.subtotal)}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="border-t border-border pt-4 space-y-2 text-sm">
+            <div className="border-t border-border pt-4 space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Fragt</span>
-                <span>{shipping === 0 ? 'Gratis' : formatPrice(shipping)}</span>
+                <span>{shipping === 0 ? <span className="text-success font-medium">Gratis</span> : formatPrice(shipping)}</span>
               </div>
-              <div className="flex justify-between text-base font-semibold pt-2 border-t border-border">
+              <div className="flex justify-between text-base font-semibold pt-3 border-t border-border">
                 <span>Total</span>
-                <span>{formatPrice(total)}</span>
+                <span className="font-display text-lg">{formatPrice(total)}</span>
               </div>
             </div>
 
             {shipping > 0 && (
-              <p className="text-xs text-muted-foreground mt-4">
-                Køb for {formatPrice(500 - subtotal)} mere for gratis fragt
-              </p>
+              <div className="mt-5 p-3 bg-accent/5 border border-accent/15 rounded-xl text-center">
+                <p className="text-xs text-accent font-medium">
+                  Køb for {formatPrice(500 - subtotal)} mere for gratis fragt ✨
+                </p>
+              </div>
             )}
           </div>
         </div>
