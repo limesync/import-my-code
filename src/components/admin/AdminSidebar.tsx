@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Image, ArrowLeft, Settings } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Image, ArrowLeft, Settings, Star } from 'lucide-react';
 import { useAdminLocale } from '@/contexts/AdminLocaleContext';
 
 export default function AdminSidebar() {
@@ -9,6 +9,7 @@ export default function AdminSidebar() {
     { to: '/admin', icon: LayoutDashboard, label: t('sidebar.dashboard'), end: true },
     { to: '/admin/produkter', icon: Package, label: t('sidebar.products'), end: false },
     { to: '/admin/ordrer', icon: ShoppingCart, label: t('sidebar.orders'), end: false },
+    { to: '/admin/anmeldelser', icon: Star, label: t('sidebar.reviews'), end: false },
     { to: '/admin/forside', icon: Image, label: t('sidebar.frontpage'), end: false },
     { to: '/admin/indstillinger', icon: Settings, label: t('sidebar.settings'), end: false },
   ];

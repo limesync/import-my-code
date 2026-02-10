@@ -2,9 +2,14 @@ import { useParams, Link } from 'react-router-dom';
 import { useProduct, useProducts, getProductImage, formatPrice } from '@/hooks/useProducts';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/hooks/useWishlist';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useProductReviews, useUserReviewForProduct, useUserOrdersForProduct, getAverageRating } from '@/hooks/useReviews';
 import { useState } from 'react';
 import { ChevronRight, Minus, Plus, Check, Truck, RotateCcw, Heart, Share2, ShieldCheck, Ruler, Droplets, Sparkles } from 'lucide-react';
 import ProductCard from '@/components/store/ProductCard';
+import StarRating from '@/components/store/StarRating';
+import ReviewForm from '@/components/store/ReviewForm';
+import ReviewList from '@/components/store/ReviewList';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
@@ -14,6 +19,14 @@ export default function ProductDetailPage() {
   const { data: allProducts } = useProducts('active');
   const { addItem } = useCart();
   const { isInWishlist, toggleWishlist, loading: wishlistLoading } = useWishlist();
+  const { user } = useAuthContext();
+  const { data: reviews = [] } = useProductReviews(product?.id || '');
+  const { data: existingReview } = useUserReviewForProduct(product?.id || '', user?.id);
+  const { data: userOrders = [] } = useUserOrdersForProduct(product?.id || '', user?.id);
+
+  const avgRating = getAverageRating(reviews);
+  const canReview = !!user && userOrders.length > 0 && !existingReview;
+  const firstOrderId = userOrders[0]?.order_id;
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -213,16 +226,12 @@ export default function ProductDetailPage() {
             {product.title}
           </h1>
 
-          {/* Star rating placeholder */}
+          {/* Star rating */}
           <div className="flex items-center gap-2 mb-5">
-            <div className="flex gap-0.5">
-              {[1,2,3,4,5].map(i => (
-                <svg key={i} className="w-4 h-4 text-primary fill-primary" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-            <span className="text-xs text-muted-foreground">(12 anmeldelser)</span>
+            <StarRating rating={avgRating} size={16} />
+            <span className="text-xs text-muted-foreground">
+              ({reviews.length} {reviews.length === 1 ? 'anmeldelse' : 'anmeldelser'})
+            </span>
           </div>
 
           {/* Price */}
@@ -404,6 +413,47 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Reviews section */}
+      <section className="mt-20 md:mt-28">
+        <div className="mb-10">
+          <span className="section-label">Kundernes mening</span>
+          <h2 className="section-title">Anmeldelser ({reviews.length})</h2>
+          {reviews.length > 0 && (
+            <div className="flex items-center gap-3 mt-2">
+              <StarRating rating={avgRating} size={20} />
+              <span className="text-muted-foreground text-sm">{avgRating.toFixed(1)} ud af 5</span>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <ReviewList reviews={reviews} />
+          <div>
+            {canReview && firstOrderId && (
+              <ReviewForm productId={product.id} userId={user!.id} orderId={firstOrderId} />
+            )}
+            {existingReview && (
+              <div className="bg-secondary/30 rounded-2xl p-6">
+                <p className="text-sm text-muted-foreground">
+                  {existingReview.status === 'pending' 
+                    ? 'Din anmeldelse afventer godkendelse.'
+                    : existingReview.status === 'approved'
+                    ? 'Tak for din anmeldelse!'
+                    : 'Din anmeldelse blev ikke godkendt.'}
+                </p>
+              </div>
+            )}
+            {!user && (
+              <div className="bg-secondary/30 rounded-2xl p-6">
+                <p className="text-sm text-muted-foreground">
+                  <Link to="/login" className="text-primary hover:underline">Log ind</Link> for at skrive en anmeldelse.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* Related products */}
       {related.length > 0 && (
