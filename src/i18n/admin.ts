@@ -7,6 +7,7 @@ export const adminTranslations = {
     'sidebar.products': 'Produkter',
     'sidebar.orders': 'Ordrer',
     'sidebar.frontpage': 'Forside',
+    'sidebar.reviews': 'Anmeldelser',
     'sidebar.settings': 'Indstillinger',
     'sidebar.backToShop': 'Til webshop',
     'sidebar.admin': 'Administration',
@@ -172,6 +173,22 @@ export const adminTranslations = {
     'status.cancelled': 'Annulleret',
     'status.refunded': 'Refunderet',
 
+    // Reviews
+    'reviews.title': 'Anmeldelser',
+    'reviews.total': 'anmeldelser total',
+    'reviews.pending': 'Afventer',
+    'reviews.approvedFilter': 'Godkendt',
+    'reviews.rejectedFilter': 'Afvist',
+    'reviews.all': 'Alle',
+    'reviews.search': 'Søg i anmeldelser...',
+    'reviews.noReviews': 'Ingen anmeldelser',
+    'reviews.approve': 'Godkend',
+    'reviews.reject': 'Afvis',
+    'reviews.delete': 'Slet',
+    'reviews.approved': 'Anmeldelse godkendt',
+    'reviews.rejected': 'Anmeldelse afvist',
+    'reviews.deleted': 'Anmeldelse slettet',
+
     // Common
     'common.loading': 'Indlæser...',
     'common.noImg': 'Intet billede',
@@ -182,6 +199,7 @@ export const adminTranslations = {
     'sidebar.products': 'Products',
     'sidebar.orders': 'Orders',
     'sidebar.frontpage': 'Frontpage',
+    'sidebar.reviews': 'Reviews',
     'sidebar.settings': 'Settings',
     'sidebar.backToShop': 'Back to shop',
     'sidebar.admin': 'Administration',
@@ -347,6 +365,22 @@ export const adminTranslations = {
     'status.cancelled': 'Cancelled',
     'status.refunded': 'Refunded',
 
+    // Reviews
+    'reviews.title': 'Reviews',
+    'reviews.total': 'reviews total',
+    'reviews.pending': 'Pending',
+    'reviews.approvedFilter': 'Approved',
+    'reviews.rejectedFilter': 'Rejected',
+    'reviews.all': 'All',
+    'reviews.search': 'Search reviews...',
+    'reviews.noReviews': 'No reviews',
+    'reviews.approve': 'Approve',
+    'reviews.reject': 'Reject',
+    'reviews.delete': 'Delete',
+    'reviews.approved': 'Review approved',
+    'reviews.rejected': 'Review rejected',
+    'reviews.deleted': 'Review deleted',
+
     // Common
     'common.loading': 'Loading...',
     'common.noImg': 'No image',
@@ -357,6 +391,7 @@ export const adminTranslations = {
     'sidebar.products': 'مصنوعات',
     'sidebar.orders': 'آرڈرز',
     'sidebar.frontpage': 'فرنٹ پیج',
+    'sidebar.reviews': 'جائزے',
     'sidebar.settings': 'ترتیبات',
     'sidebar.backToShop': 'دکان پر واپس',
     'sidebar.admin': 'انتظامیہ',
@@ -521,6 +556,22 @@ export const adminTranslations = {
     'status.delivered': 'پہنچایا گیا',
     'status.cancelled': 'منسوخ',
     'status.refunded': 'واپس کیا گیا',
+
+    // Reviews
+    'reviews.title': 'جائزے',
+    'reviews.total': 'کل جائزے',
+    'reviews.pending': 'زیر التوا',
+    'reviews.approvedFilter': 'منظور شدہ',
+    'reviews.rejectedFilter': 'مسترد',
+    'reviews.all': 'تمام',
+    'reviews.search': 'جائزے تلاش کریں...',
+    'reviews.noReviews': 'کوئی جائزہ نہیں',
+    'reviews.approve': 'منظور کریں',
+    'reviews.reject': 'مسترد کریں',
+    'reviews.delete': 'حذف کریں',
+    'reviews.approved': 'جائزہ منظور ہوا',
+    'reviews.rejected': 'جائزہ مسترد ہوا',
+    'reviews.deleted': 'جائزہ حذف ہوا',
 
     // Common
     'common.loading': 'لوڈ ہو رہا ہے...',

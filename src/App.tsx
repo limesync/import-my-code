@@ -33,6 +33,7 @@ import AdminOrders from "@/pages/admin/AdminOrders";
 import AdminOrderDetail from "@/pages/admin/AdminOrderDetail";
 import AdminFrontpage from "@/pages/admin/AdminFrontpage";
 import AdminSettings from "@/pages/admin/AdminSettings";
+import AdminReviews from "@/pages/admin/AdminReviews";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -78,6 +79,7 @@ const App = () => (
                 <Route path="ordrer" element={<AdminOrders />} />
                 <Route path="ordrer/:orderId" element={<AdminOrderDetail />} />
                 <Route path="forside" element={<AdminFrontpage />} />
+                <Route path="anmeldelser" element={<AdminReviews />} />
                 <Route path="indstillinger" element={<AdminSettings />} />
               </Route>
 
