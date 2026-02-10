@@ -12,7 +12,7 @@ const AdminLocaleContext = createContext<AdminLocaleContextType | null>(null);
 export function AdminLocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<AdminLocale>(() => {
     const saved = localStorage.getItem('admin-locale');
-    return (saved === 'en' || saved === 'da') ? saved : 'da';
+    return (saved === 'en' || saved === 'da' || saved === 'ur') ? saved : 'da';
   });
 
   const setLocale = useCallback((newLocale: AdminLocale) => {
