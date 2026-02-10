@@ -137,7 +137,7 @@ export default function OrdersPage() {
 
   return (
     <div className="store-container py-12 md:py-20">
-      <div className="max-w-5xl mx-auto">
+      <div>
         <Link
           to="/konto"
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider mb-6"
@@ -163,7 +163,7 @@ export default function OrdersPage() {
             <Link to="/produkter" className="btn-primary">Start med at handle</Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {orders.map(order => (
               <div key={order.id} className="bg-card border border-border rounded-2xl p-5 md:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">

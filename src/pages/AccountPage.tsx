@@ -67,7 +67,7 @@ export default function AccountPage() {
 
   return (
     <div className="store-container py-12 md:py-20">
-      <div className="max-w-5xl mx-auto">
+      <div>
         {/* Header */}
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -86,7 +86,7 @@ export default function AccountPage() {
         </div>
 
         {/* Quick actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           <Link
             to="/konto/ordrer"
             className="flex items-center gap-4 p-6 bg-card border border-border rounded-2xl hover:border-primary/30 hover:shadow-md transition-all group"
@@ -118,7 +118,7 @@ export default function AccountPage() {
           {isAdmin && (
             <Link
               to="/admin"
-              className="flex items-center gap-4 p-6 bg-card border border-accent/20 rounded-2xl hover:border-accent/40 hover:shadow-md transition-all group md:col-span-2"
+              className="flex items-center gap-4 p-6 bg-card border border-accent/20 rounded-2xl hover:border-accent/40 hover:shadow-md transition-all group"
             >
               <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
                 <Settings size={22} className="text-accent" />
@@ -133,7 +133,7 @@ export default function AccountPage() {
         </div>
 
         {/* Account details */}
-        <div className="bg-card border border-border rounded-2xl p-6 md:p-8 mb-8">
+        <div className="bg-card border border-border rounded-2xl p-6 md:p-8 mb-8 max-w-3xl">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-xl font-medium text-foreground">Kontooplysninger</h2>
             {!isEditing ? (
