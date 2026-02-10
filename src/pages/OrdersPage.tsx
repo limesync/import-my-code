@@ -137,7 +137,7 @@ export default function OrdersPage() {
 
   return (
     <div className="store-container py-12 md:py-20">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <Link
           to="/konto"
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider mb-6"
