@@ -124,8 +124,8 @@ export default function AdminOrders() {
                     <div className="hidden lg:flex -space-x-2">
                       {order.items.slice(0, 3).map((item, i) => (
                         <div key={item.id} className="w-10 h-10 rounded-lg bg-secondary border-2 border-card overflow-hidden" style={{ zIndex: 3 - i }}>
-                          {item.image_url ? (
-                            <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                          {(item.resolved_image || item.image_url) ? (
+                            <img src={item.resolved_image || item.image_url!} alt="" className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center"><Package size={16} className="text-muted-foreground" /></div>
                           )}

@@ -8,14 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { getProductImage } from '@/hooks/useProducts';
+import { useAdminLocale } from '@/contexts/AdminLocaleContext';
+import type { TranslationKey } from '@/i18n/admin';
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  pending: { label: 'Afventer', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-  confirmed: { label: 'Bekræftet', color: 'bg-blue-100 text-blue-800', icon: Check },
-  shipped: { label: 'Afsendt', color: 'bg-purple-100 text-purple-800', icon: Truck },
-  delivered: { label: 'Leveret', color: 'bg-green-100 text-green-800', icon: Package },
-  cancelled: { label: 'Annulleret', color: 'bg-red-100 text-red-800', icon: X },
-  refunded: { label: 'Refunderet', color: 'bg-orange-100 text-orange-800', icon: RotateCcw },
+const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; color: string; icon: typeof Clock }> = {
+  pending: { labelKey: 'status.pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+  confirmed: { labelKey: 'status.confirmed', color: 'bg-blue-100 text-blue-800', icon: Check },
+  shipped: { labelKey: 'status.shipped', color: 'bg-purple-100 text-purple-800', icon: Truck },
+  delivered: { labelKey: 'status.delivered', color: 'bg-green-100 text-green-800', icon: Package },
+  cancelled: { labelKey: 'status.cancelled', color: 'bg-red-100 text-red-800', icon: X },
+  refunded: { labelKey: 'status.refunded' as TranslationKey, color: 'bg-orange-100 text-orange-800', icon: RotateCcw },
 };
 
 const STATUS_FLOW = ['pending', 'confirmed', 'shipped', 'delivered'];
@@ -31,6 +33,7 @@ interface OrderEvent {
 export default function AdminOrderDetail() {
   const { orderId } = useParams();
   const queryClient = useQueryClient();
+  const { t } = useAdminLocale();
   const [trackingNumber, setTrackingNumber] = useState('');
   const [trackingUrl, setTrackingUrl] = useState('');
   const [notes, setNotes] = useState('');
@@ -47,7 +50,7 @@ export default function AdminOrderDetail() {
         .maybeSingle();
 
       if (orderError) throw orderError;
-      if (!orderData) throw new Error('Ordre ikke fundet');
+      if (!orderData) throw new Error('Order not found');
 
       const { data: itemsData } = await supabase
         .from('order_items')
@@ -100,7 +103,7 @@ export default function AdminOrderDetail() {
         body: { orderId, emailType, trackingNumber: trackingNum, trackingUrl: trackingLink },
       });
       if (error) { console.error('Email error:', error); return; }
-      if (data?.success) toast.success('Email sendt til kunden');
+      if (data?.success) toast.success(t('orderDetail.emailSent'));
     } catch (err) { console.error('Failed to send email:', err); }
   };
 
@@ -112,10 +115,11 @@ export default function AdminOrderDetail() {
         .eq('id', orderId);
       if (updateError) throw updateError;
 
+      const statusLabel = STATUS_CONFIG[newStatus]?.labelKey ? t(STATUS_CONFIG[newStatus].labelKey) : newStatus;
       await supabase.from('order_events').insert({
         order_id: orderId,
         event_type: 'status_change',
-        description: `Status ændret til ${STATUS_CONFIG[newStatus]?.label || newStatus}`,
+        description: `Status → ${statusLabel}`,
         metadata: { new_status: newStatus },
       });
 
@@ -129,10 +133,10 @@ export default function AdminOrderDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-      toast.success('Ordrestatus opdateret');
+      toast.success(t('orderDetail.statusUpdated'));
       setShowRefundConfirm(false);
     },
-    onError: (error: Error) => toast.error(error.message || 'Kunne ikke opdatere status'),
+    onError: (error: Error) => toast.error(error.message || t('orderDetail.statusError')),
   });
 
   const saveTracking = useMutation({
@@ -147,7 +151,7 @@ export default function AdminOrderDetail() {
         await supabase.from('order_events').insert({
           order_id: orderId,
           event_type: 'tracking_added',
-          description: `Tracking-nummer tilføjet: ${trackingNumber}`,
+          description: `Tracking: ${trackingNumber}`,
           metadata: { tracking_number: trackingNumber, tracking_url: trackingUrl },
         });
       }
@@ -155,9 +159,9 @@ export default function AdminOrderDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-order', orderId] });
       setShowTrackingForm(false);
-      toast.success('Tracking-information gemt');
+      toast.success(t('orderDetail.trackingSaved'));
     },
-    onError: (error: Error) => toast.error(error.message || 'Kunne ikke gemme tracking'),
+    onError: (error: Error) => toast.error(error.message || t('orderDetail.trackingError')),
   });
 
   const saveNotes = useMutation({
@@ -167,9 +171,9 @@ export default function AdminOrderDetail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-order', orderId] });
-      toast.success('Noter gemt');
+      toast.success(t('orderDetail.notesSaved'));
     },
-    onError: (error: Error) => toast.error(error.message || 'Kunne ikke gemme noter'),
+    onError: (error: Error) => toast.error(error.message || t('orderDetail.notesError')),
   });
 
   const markAsShipped = () => {
@@ -188,8 +192,8 @@ export default function AdminOrderDetail() {
   if (!order) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Ordre ikke fundet</p>
-        <Link to="/admin/ordrer" className="text-primary hover:underline mt-2 inline-block">Tilbage til ordrer</Link>
+        <p className="text-muted-foreground">{t('orderDetail.notFound')}</p>
+        <Link to="/admin/ordrer" className="text-primary hover:underline mt-2 inline-block">{t('orderDetail.back')}</Link>
       </div>
     );
   }
@@ -203,14 +207,14 @@ export default function AdminOrderDetail() {
       {/* Header */}
       <div className="mb-6">
         <Link to="/admin/ordrer" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
-          <ArrowLeft size={16} /> Tilbage til ordrer
+          <ArrowLeft size={16} /> {t('orderDetail.back')}
         </Link>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
               <h1 className="font-display text-2xl font-semibold">{order.order_number}</h1>
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}>
-                <StatusIcon size={14} /> {statusConfig.label}
+                <StatusIcon size={14} /> {t(statusConfig.labelKey)}
               </span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
@@ -224,41 +228,41 @@ export default function AdminOrderDetail() {
       {/* Status Actions */}
       {order.status !== 'cancelled' && order.status !== 'refunded' && (
         <div className="admin-card mb-6">
-          <h3 className="font-medium mb-4">Handlinger</h3>
+          <h3 className="font-medium mb-4">{t('orderDetail.actions')}</h3>
           <div className="flex flex-wrap gap-3">
             {order.status === 'pending' && (
               <Button onClick={() => updateStatus.mutate({ newStatus: 'confirmed' })} className="gap-2" disabled={updateStatus.isPending}>
-                {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} Bekræft ordre
+                {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />} {t('orderDetail.confirmOrder')}
               </Button>
             )}
             {order.status === 'confirmed' && (
               <Button onClick={markAsShipped} className="gap-2" disabled={updateStatus.isPending}>
-                {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Truck size={16} />} Markér som afsendt
+                {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Truck size={16} />} {t('orderDetail.markShipped')}
               </Button>
             )}
             {order.status === 'shipped' && (
               <Button onClick={() => updateStatus.mutate({ newStatus: 'delivered' })} className="gap-2" disabled={updateStatus.isPending}>
-                {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Package size={16} />} Markér som leveret
+                {updateStatus.isPending ? <Loader2 size={16} className="animate-spin" /> : <Package size={16} />} {t('orderDetail.markDelivered')}
               </Button>
             )}
             {order.status !== 'delivered' && (
               <Button variant="outline" onClick={() => updateStatus.mutate({ newStatus: 'cancelled', sendEmail: false })} className="text-destructive hover:text-destructive" disabled={updateStatus.isPending}>
-                <X size={16} /> Annuller ordre
+                <X size={16} /> {t('orderDetail.cancelOrder')}
               </Button>
             )}
             {canRefund && (
               <>
                 {showRefundConfirm ? (
                   <div className="flex items-center gap-2 border border-orange-300 bg-orange-50 rounded-lg px-4 py-2">
-                    <span className="text-sm text-orange-800 font-medium">Bekræft refundering?</span>
+                    <span className="text-sm text-orange-800 font-medium">{t('orderDetail.confirmRefund')}</span>
                     <Button size="sm" variant="destructive" onClick={() => updateStatus.mutate({ newStatus: 'refunded' })} disabled={updateStatus.isPending} className="bg-orange-600 hover:bg-orange-700">
-                      {updateStatus.isPending ? <Loader2 size={14} className="animate-spin" /> : 'Ja, refundér'}
+                      {updateStatus.isPending ? <Loader2 size={14} className="animate-spin" /> : t('orderDetail.yesRefund')}
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setShowRefundConfirm(false)}>Nej</Button>
+                    <Button size="sm" variant="ghost" onClick={() => setShowRefundConfirm(false)}>{t('orderDetail.no')}</Button>
                   </div>
                 ) : (
                   <Button variant="outline" onClick={() => setShowRefundConfirm(true)} className="gap-2 text-orange-700 border-orange-300 hover:bg-orange-50 hover:text-orange-800">
-                    <RotateCcw size={16} /> Refundér ordre
+                    <RotateCcw size={16} /> {t('orderDetail.refundOrder')}
                   </Button>
                 )}
               </>
@@ -273,8 +277,10 @@ export default function AdminOrderDetail() {
           <div className="flex items-center gap-3">
             <RotateCcw size={20} className="text-orange-600" />
             <div>
-              <p className="font-medium text-orange-800">Denne ordre er refunderet</p>
-              <p className="text-sm text-orange-600">Ordren blev refunderet {order.status_updated_at ? new Date(order.status_updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</p>
+              <p className="font-medium text-orange-800">{t('orderDetail.refundedBanner')}</p>
+              <p className="text-sm text-orange-600">
+                {t('orderDetail.refundedDate')} {order.status_updated_at ? new Date(order.status_updated_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+              </p>
             </div>
           </div>
         </div>
@@ -283,22 +289,22 @@ export default function AdminOrderDetail() {
       {/* Tracking Form */}
       {showTrackingForm && (
         <div className="admin-card mb-6 border-2 border-primary/20">
-          <h3 className="font-medium mb-4 flex items-center gap-2"><Send size={18} /> Tilføj tracking-information</h3>
+          <h3 className="font-medium mb-4 flex items-center gap-2"><Send size={18} /> {t('orderDetail.trackingTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="text-sm font-medium mb-1 block">Tracking-nummer *</label>
-              <Input value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} placeholder="f.eks. 1234567890" />
+              <label className="text-sm font-medium mb-1 block">{t('orderDetail.trackingNumber')} *</label>
+              <Input value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} placeholder="1234567890" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1 block">Tracking-link (valgfrit)</label>
+              <label className="text-sm font-medium mb-1 block">{t('orderDetail.trackingLink')}</label>
               <Input value={trackingUrl} onChange={(e) => setTrackingUrl(e.target.value)} placeholder="https://..." />
             </div>
           </div>
           <div className="flex gap-3">
             <Button onClick={() => { saveTracking.mutate(); updateStatus.mutate({ newStatus: 'shipped' }); }} disabled={saveTracking.isPending || updateStatus.isPending}>
-              {(saveTracking.isPending || updateStatus.isPending) && <Loader2 size={16} className="animate-spin mr-2" />} Gem og markér som afsendt
+              {(saveTracking.isPending || updateStatus.isPending) && <Loader2 size={16} className="animate-spin mr-2" />} {t('orderDetail.saveAndShip')}
             </Button>
-            <Button variant="outline" onClick={() => setShowTrackingForm(false)}>Annuller</Button>
+            <Button variant="outline" onClick={() => setShowTrackingForm(false)}>{t('orderDetail.cancelBtn')}</Button>
           </div>
         </div>
       )}
@@ -308,7 +314,7 @@ export default function AdminOrderDetail() {
         <div className="lg:col-span-2 space-y-6">
           {/* Order Items */}
           <div className="admin-card">
-            <h3 className="font-medium mb-4">Produkter</h3>
+            <h3 className="font-medium mb-4">{t('orderDetail.productsTitle')}</h3>
             <div className="divide-y">
               {order.items.map((item: { id: string; image_url: string | null; resolved_image: string | null; product_title: string; variant_name: string; quantity: number; price: number }) => (
                 <div key={item.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
@@ -322,24 +328,24 @@ export default function AdminOrderDetail() {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{item.product_title}</p>
                     <p className="text-sm text-muted-foreground">{item.variant_name}</p>
-                    <p className="text-sm text-muted-foreground">Antal: {item.quantity}</p>
+                    <p className="text-sm text-muted-foreground">{t('orderDetail.quantity')}: {item.quantity}</p>
                   </div>
                   <p className="font-medium">{(Number(item.price) * item.quantity).toLocaleString('da-DK')} kr</p>
                 </div>
               ))}
             </div>
             <div className="border-t mt-4 pt-4 space-y-2">
-              <div className="flex justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span>{Number(order.subtotal).toLocaleString('da-DK')} kr</span></div>
-              <div className="flex justify-between text-sm"><span className="text-muted-foreground">Fragt</span><span>{Number(order.shipping).toLocaleString('da-DK')} kr</span></div>
-              <div className="flex justify-between font-medium text-lg pt-2 border-t"><span>Total</span><span>{Number(order.total).toLocaleString('da-DK')} kr</span></div>
+              <div className="flex justify-between text-sm"><span className="text-muted-foreground">{t('orderDetail.subtotal')}</span><span>{Number(order.subtotal).toLocaleString('da-DK')} kr</span></div>
+              <div className="flex justify-between text-sm"><span className="text-muted-foreground">{t('orderDetail.shipping')}</span><span>{Number(order.shipping).toLocaleString('da-DK')} kr</span></div>
+              <div className="flex justify-between font-medium text-lg pt-2 border-t"><span>{t('orderDetail.totalLabel')}</span><span>{Number(order.total).toLocaleString('da-DK')} kr</span></div>
             </div>
           </div>
 
           {/* Timeline */}
           <div className="admin-card">
-            <h3 className="font-medium mb-4">Tidslinje</h3>
+            <h3 className="font-medium mb-4">{t('orderDetail.timeline')}</h3>
             {order.events.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Ingen hændelser endnu</p>
+              <p className="text-sm text-muted-foreground">{t('orderDetail.noEvents')}</p>
             ) : (
               <div className="space-y-4">
                 {order.events.map((event: OrderEvent) => (
@@ -359,16 +365,16 @@ export default function AdminOrderDetail() {
 
           {/* Notes */}
           <div className="admin-card">
-            <h3 className="font-medium mb-4 flex items-center gap-2"><FileText size={18} /> Interne noter</h3>
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Tilføj interne noter om denne ordre..." className="mb-3" rows={4} />
-            <Button variant="outline" size="sm" onClick={() => saveNotes.mutate()} disabled={saveNotes.isPending}>Gem noter</Button>
+            <h3 className="font-medium mb-4 flex items-center gap-2"><FileText size={18} /> {t('orderDetail.notes')}</h3>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('orderDetail.notesPlaceholder')} className="mb-3" rows={4} />
+            <Button variant="outline" size="sm" onClick={() => saveNotes.mutate()} disabled={saveNotes.isPending}>{t('orderDetail.saveNotes')}</Button>
           </div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           <div className="admin-card">
-            <h3 className="font-medium mb-4 flex items-center gap-2"><User size={18} /> Kunde</h3>
+            <h3 className="font-medium mb-4 flex items-center gap-2"><User size={18} /> {t('orderDetail.customerTitle')}</h3>
             <div className="space-y-3">
               <p className="font-medium">{order.shipping_address?.firstName} {order.shipping_address?.lastName}</p>
               {order.shipping_address?.email && (
@@ -381,7 +387,7 @@ export default function AdminOrderDetail() {
           </div>
 
           <div className="admin-card">
-            <h3 className="font-medium mb-4 flex items-center gap-2"><MapPin size={18} /> Leveringsadresse</h3>
+            <h3 className="font-medium mb-4 flex items-center gap-2"><MapPin size={18} /> {t('orderDetail.addressTitle')}</h3>
             <div className="text-sm text-muted-foreground space-y-1">
               <p>{order.shipping_address?.address}</p>
               <p>{order.shipping_address?.zip} {order.shipping_address?.city}</p>
@@ -391,16 +397,16 @@ export default function AdminOrderDetail() {
 
           {(order.tracking_number || order.status === 'shipped' || order.status === 'delivered') && (
             <div className="admin-card">
-              <h3 className="font-medium mb-4 flex items-center gap-2"><Truck size={18} /> Tracking</h3>
+              <h3 className="font-medium mb-4 flex items-center gap-2"><Truck size={18} /> {t('orderDetail.tracking')}</h3>
               {order.tracking_number ? (
                 <div className="space-y-2">
                   <p className="text-sm font-mono bg-secondary px-3 py-2 rounded">{order.tracking_number}</p>
                   {order.tracking_url && (
-                    <a href={order.tracking_url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">Spor forsendelse →</a>
+                    <a href={order.tracking_url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">{t('orderDetail.trackShipment')}</a>
                   )}
                 </div>
               ) : (
-                <Button variant="outline" size="sm" onClick={() => setShowTrackingForm(true)} className="w-full">Tilføj tracking</Button>
+                <Button variant="outline" size="sm" onClick={() => setShowTrackingForm(true)} className="w-full">{t('orderDetail.addTracking')}</Button>
               )}
             </div>
           )}
