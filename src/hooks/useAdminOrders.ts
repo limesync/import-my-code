@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getProductImage } from '@/hooks/useProducts';
 
 export interface AdminOrder {
   id: string;
@@ -34,6 +35,7 @@ export interface AdminOrderItem {
   quantity: number;
   price: number;
   image_url: string | null;
+  resolved_image: string | null;
 }
 
 export function useAdminOrders() {
@@ -59,9 +61,25 @@ export function useAdminOrders() {
 
       if (itemsError) throw itemsError;
 
+      // Fetch product slugs for image mapping
+      const productIds = [...new Set((itemsData || []).map(i => i.product_id).filter(Boolean))] as string[];
+      let productSlugMap: Record<string, string> = {};
+      if (productIds.length > 0) {
+        const { data: productsData } = await supabase
+          .from('products')
+          .select('id, slug')
+          .in('id', productIds);
+        if (productsData) {
+          productSlugMap = Object.fromEntries(productsData.map(p => [p.id, p.slug]));
+        }
+      }
+
       const itemsByOrder = (itemsData || []).reduce((acc, item) => {
         if (!acc[item.order_id]) acc[item.order_id] = [];
-        acc[item.order_id].push(item);
+        acc[item.order_id].push({
+          ...item,
+          resolved_image: item.product_id ? getProductImage(productSlugMap[item.product_id] || '') : null,
+        });
         return acc;
       }, {} as Record<string, AdminOrderItem[]>);
 
