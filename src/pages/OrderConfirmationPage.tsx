@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link, useSearchParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { formatPrice } from '@/hooks/useProducts';
+import { formatPrice, getProductImage } from '@/hooks/useProducts';
 import { CheckCircle, Package, Mail, ArrowRight } from 'lucide-react';
 
 export default function OrderConfirmationPage() {
@@ -28,12 +28,30 @@ export default function OrderConfirmationPage() {
         .select('*')
         .eq('order_id', orderId);
 
+      // Resolve product slugs for image mapping
+      const productIds = (items || []).map(i => i.product_id).filter(Boolean) as string[];
+      let productSlugMap: Record<string, string> = {};
+      if (productIds.length > 0) {
+        const { data: products } = await supabase
+          .from('products')
+          .select('id, slug')
+          .in('id', productIds);
+        productSlugMap = (products || []).reduce((acc, p) => ({ ...acc, [p.id]: p.slug }), {} as Record<string, string>);
+      }
+
+      const resolvedItems = (items || []).map(item => ({
+        ...item,
+        resolved_image: item.product_id && productSlugMap[item.product_id]
+          ? getProductImage(productSlugMap[item.product_id])
+          : item.image_url,
+      }));
+
       return {
         ...data,
         shipping_address: typeof data.shipping_address === 'string'
           ? JSON.parse(data.shipping_address)
           : data.shipping_address,
-        items: items || [],
+        items: resolvedItems,
       };
     },
     enabled: !!orderId,
@@ -124,8 +142,8 @@ export default function OrderConfirmationPage() {
             {order.items.map((item: any) => (
               <div key={item.id} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-3">
-                  {item.image_url && (
-                    <img src={item.image_url} alt={item.product_title} className="w-10 h-10 rounded-lg object-cover" />
+                  {(item.resolved_image || item.image_url) && (
+                    <img src={item.resolved_image || item.image_url} alt={item.product_title} className="w-10 h-10 rounded-lg object-cover" />
                   )}
                   <div>
                     <p className="font-medium">{item.product_title}</p>
