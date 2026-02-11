@@ -37,11 +37,13 @@ export function useCreateOrder() {
     mutationFn: async (data: CreateOrderData) => {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id || null;
+      const orderId = crypto.randomUUID();
 
       // Create the order
-      const { data: order, error: orderError } = await supabase
+      const { error: orderError } = await supabase
         .from('orders')
         .insert([{
+          id: orderId,
           order_number: generateOrderNumber(),
           user_id: userId,
           subtotal: data.subtotal,
@@ -49,9 +51,7 @@ export function useCreateOrder() {
           total: data.total,
           shipping_address: JSON.parse(JSON.stringify(data.shippingAddress)),
           status: 'pending',
-        }])
-        .select()
-        .single();
+        }]);
 
       if (orderError) throw orderError;
 
@@ -62,7 +62,7 @@ export function useCreateOrder() {
         const image = product?.images[0];
 
         return {
-          order_id: order.id,
+          order_id: orderId,
           product_id: item.productId,
           variant_id: item.variantId,
           product_title: product?.title || 'Unknown Product',
@@ -81,13 +81,13 @@ export function useCreateOrder() {
 
       // Create initial order event
       await supabase.from('order_events').insert({
-        order_id: order.id,
+        order_id: orderId,
         event_type: 'order_created',
         description: 'Ordre oprettet',
         metadata: {},
       });
 
-      return order;
+      return { id: orderId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-orders'] });
