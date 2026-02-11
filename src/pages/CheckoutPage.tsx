@@ -4,7 +4,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useProducts, getProductImage, formatPrice } from '@/hooks/useProducts';
 import { useCreateOrder } from '@/hooks/useOrders';
-import { ChevronLeft, Lock, CreditCard, Truck, Check, ShieldCheck } from 'lucide-react';
+import { Lock, CreditCard, Truck, Check, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CheckoutPage() {
@@ -112,28 +112,32 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="store-container py-10 md:py-16">
-      {/* Header */}
-      <div className="mb-10">
-        <Link 
-          to="/produkter" 
-          className="group inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider mb-6"
-        >
-          <ChevronLeft size={14} className="transition-transform group-hover:-translate-x-1" />
-          Fortsæt shopping
-        </Link>
-
-        <div className="flex items-center gap-2 mb-2">
-          <span className="section-label">◆ Kasse</span>
+    <div className="store-container py-12 md:py-20">
+      {/* Breadcrumb & Header */}
+      <div className="mb-10 md:mb-14">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+          <Link to="/" className="hover:text-foreground transition-colors">Hjem</Link>
+          <span>/</span>
+          <span className="text-foreground font-medium">Kasse</span>
         </div>
-        <h1 className="section-title text-3xl md:text-4xl">Gennemfør din ordre</h1>
+
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="h-px w-12 bg-accent/40" />
+            <span className="text-accent text-lg">◆</span>
+            <div className="h-px w-12 bg-accent/40" />
+          </div>
+          <span className="section-label">Kasse</span>
+          <h1 className="section-title mb-3">Gennemfør din ordre</h1>
+          <p className="text-muted-foreground">{cartDetails.length} {cartDetails.length === 1 ? 'vare' : 'varer'} i kurven</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
         {/* Form */}
         <div className="lg:col-span-3 space-y-8">
           {/* Contact */}
-          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="bg-card border border-border rounded-3xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h2 className="font-display text-xl font-medium text-foreground mb-1">
               Kontaktoplysninger
             </h2>
@@ -155,7 +159,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Shipping address */}
-          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="bg-card border border-border rounded-3xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h2 className="font-display text-xl font-medium text-foreground mb-5">
               Leveringsadresse
             </h2>
@@ -169,7 +173,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Shipping method */}
-          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="bg-card border border-border rounded-3xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h2 className="font-display text-xl font-medium text-foreground mb-5">
               Leveringsmetode
             </h2>
@@ -191,7 +195,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Payment info (demo) */}
-          <div className="bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="bg-card border border-border rounded-3xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h2 className="font-display text-xl font-medium text-foreground mb-5">
               Betaling
             </h2>
@@ -222,7 +226,7 @@ export default function CheckoutPage() {
 
         {/* Order summary sidebar */}
         <div className="lg:col-span-2">
-          <div className="sticky top-28 bg-card border border-border rounded-2xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
+          <div className="sticky top-28 bg-card border border-border rounded-3xl p-6 md:p-8" style={{ boxShadow: 'var(--shadow-card)' }}>
             <h2 className="font-display text-xl font-medium text-foreground mb-6">
               Ordreoversigt
             </h2>
