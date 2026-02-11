@@ -430,6 +430,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_order: { Args: { _order_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
