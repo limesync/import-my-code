@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CartItem } from '@/contexts/CartContext';
-import { Product } from './useProducts';
+import { Product, getProductImage } from './useProducts';
 
 interface ShippingAddress {
   firstName: string;
@@ -59,8 +59,6 @@ export function useCreateOrder() {
       const orderItems = data.items.map(item => {
         const product = data.products.find(p => p.id === item.productId);
         const variant = product?.variants.find(v => v.id === item.variantId);
-        const image = product?.images[0];
-
         return {
           order_id: orderId,
           product_id: item.productId,
@@ -69,7 +67,7 @@ export function useCreateOrder() {
           variant_name: variant?.name || 'Default',
           quantity: item.quantity,
           price: variant?.price || 0,
-          image_url: image?.url || null,
+          image_url: product ? getProductImage(product.slug) : null,
         };
       });
 
@@ -86,6 +84,14 @@ export function useCreateOrder() {
         description: 'Ordre oprettet',
         metadata: {},
       });
+
+      // Fire-and-forget email confirmation (gracefully handles missing RESEND_API_KEY)
+      supabase.functions.invoke('send-order-email', {
+        body: { orderId, emailType: 'order_confirmation' },
+      }).then(res => {
+        if (res.error) console.warn('Email send failed:', res.error);
+        else console.log('Order confirmation email triggered');
+      }).catch(err => console.warn('Email invoke error:', err));
 
       return { id: orderId };
     },
