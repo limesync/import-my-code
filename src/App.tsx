@@ -26,6 +26,7 @@ import ReturnsPage from "@/pages/ReturnsPage";
 import PrivacyPage from "@/pages/PrivacyPage";
 import TermsPage from "@/pages/TermsPage";
 import CookiesPage from "@/pages/CookiesPage";
+import OrderConfirmationPage from "@/pages/OrderConfirmationPage";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminProducts from "@/pages/admin/AdminProducts";
 import AdminProductForm from "@/pages/admin/AdminProductForm";
@@ -69,6 +70,7 @@ const App = () => (
                 <Route path="/privatlivspolitik" element={<PrivacyPage />} />
                 <Route path="/handelsbetingelser" element={<TermsPage />} />
                 <Route path="/cookies" element={<CookiesPage />} />
+                <Route path="/ordre-bekraeftelse" element={<OrderConfirmationPage />} />
               </Route>
 
               {/* Admin */}

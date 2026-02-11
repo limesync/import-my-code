@@ -118,7 +118,7 @@ export default function CheckoutPage() {
     }
 
     try {
-      await createOrder.mutateAsync({
+      const result = await createOrder.mutateAsync({
         items,
         products,
         shippingAddress: {
@@ -137,14 +137,7 @@ export default function CheckoutPage() {
       });
 
       clearCart();
-      
-      if (!isAuthenticated) {
-        toast.success('Tak for din ordre! Tjek din email for at bekræfte din konto.');
-        navigate('/');
-      } else {
-        toast.success('Tak for din ordre! Vi sender en bekræftelse snart.');
-        navigate('/konto/ordrer');
-      }
+      navigate(`/ordre-bekraeftelse?id=${result.id}`);
     } catch (error: any) {
       console.error('Order error:', error);
       toast.error(error.message || 'Kunne ikke oprette ordre. Prøv igen.');
